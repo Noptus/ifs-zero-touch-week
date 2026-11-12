@@ -16,7 +16,9 @@
     "pdf": "node scripts/brief.mjs",
     "test:browser": "playwright test",
     "predev": "node scripts/ocr-assets.mjs",
-    "prebuild": "node scripts/ocr-assets.mjs"
+    "prebuild": "node scripts/ocr-assets.mjs",
+    "build:pilot": "VITE_PILOT_MODE=server npm run build && vite build --ssr server/index.ts --outDir server-dist --emptyOutDir --config server/vite.config.ts",
+    "pilot": "node server-dist/index.js"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
@@ -25,15 +27,18 @@
     "@tesseract.js-data/eng": "^1.0.0",
     "@tesseract.js-data/fra": "^1.0.0",
     "lucide-react": "^1.72.0",
+    "pg": "^8.23.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwindcss": "^4.3.5",
-    "tesseract.js": "^7.0.0"
+    "tesseract.js": "^7.0.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.65.0",
     "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",

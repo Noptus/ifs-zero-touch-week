@@ -9,7 +9,7 @@ const specification = 'https://github.com/Noptus/ifs-zero-touch-week/blob/main/d
 const benefits = [
   { audience: 'Employees', text: 'Capture any shop receipt and confirm the proposed work items in one tap.' },
   { audience: 'Approvers', text: 'Focus on unclear items, unusual prices and missing evidence.' },
-  { audience: 'Finance', text: 'See committed spend against each allowance and reconcile eligible lines to the ledger.' },
+  { audience: 'Finance', text: 'See approved and reserved amounts against each limit and reconcile eligible lines to the ledger.' },
 ];
 
 const measures = [
@@ -32,9 +32,9 @@ export default function ExpensesPage() {
           </div>
         </div>
         <aside className="pilot-target" aria-labelledby="expense-policy">
-          <h2 id="expense-policy">Work expense allowance</h2>
-          <p className="target-value">€500 <span>per month</span></p>
-          <p>Per employee, for eligible work items. A drill can qualify. A chocolate bar on the same receipt is excluded.</p>
+          <h2 id="expense-policy">Monthly reimbursement limit</h2>
+          <p className="target-value">$500 <span>USD / month</span></p>
+          <p>Maximum eligible reimbursement per employee. Actual spend depends on approved claims. A drill can qualify. A chocolate bar on the same receipt is excluded.</p>
         </aside>
       </div>
     </section>
@@ -50,15 +50,15 @@ export default function ExpensesPage() {
       requirements={productRequirements.expenses}
     />
     <section className="shell section" id="azure-architecture">
-      <div className="section-title"><h2>Azure architecture</h2><p>Reference implementation with an IFS Cloud expense adapter.</p></div>
+      <div className="section-title"><h2>Azure architecture</h2><p>The Bicep pilot runs React, Node.js and private PostgreSQL. The diagram shows the planned production integrations.</p></div>
       <figure className="expense-architecture">
         <a href={slide} className="expense-slide" target="_blank" rel="noreferrer">
-          <img src={slide} alt="Expense processing in Azure. Capture a receipt, extract it with Document Intelligence, apply Go policy and a PostgreSQL ledger, then post to IFS Cloud or route exceptions to review." width="1120" height="630" loading="lazy" />
+          <img src={slide} alt="Expense processing in Azure. Capture a receipt, extract it with Document Intelligence, apply policy and a PostgreSQL ledger, then post to IFS Cloud or route exceptions to review." width="1120" height="630" loading="lazy" />
         </a>
         <ol className="expense-flow">
-          <li><strong>Capture</strong><span>Mobile React → Go API → private Azure Blob</span></li>
+          <li><strong>Capture</strong><span>Mobile React → receipt API → private Azure Blob</span></li>
           <li><strong>Extract</strong><span>Azure Document Intelligence → structured receipt items</span></li>
-          <li><strong>Check</strong><span>Go rules → provenance, price reference and PostgreSQL allowance</span></li>
+          <li><strong>Check</strong><span>Policy rules → provenance, price reference and PostgreSQL allowance</span></li>
           <li><strong>Resolve</strong><span>Ready to post to IFS Cloud, or reviewer queue for exceptions</span></li>
         </ol>
         <figcaption>

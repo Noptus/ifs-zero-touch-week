@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1120" height="630" viewBox="0 0 1120 630" role="img" aria-labelledby="title description">
   <title id="title">Expense processing in Azure</title>
-  <desc id="description">A mobile React app submits a receipt through the Go API to private Azure Blob Storage. An asynchronous worker uses Azure Document Intelligence to extract line items. Go policy checks evidence, price and the PostgreSQL allowance. A clean confirmed claim is reserved and queued for IFS posting. Other claims go to human review. The adapter records acknowledgment and reconciles uncertain results.</desc>
+  <desc id="description">A mobile React app submits a receipt through the receipt API to private Azure Blob Storage. An asynchronous worker uses Azure Document Intelligence to extract line items. Policy checks evidence, price and the PostgreSQL allowance. A clean confirmed claim is reserved and queued for IFS posting. Other claims go to human review. The adapter records acknowledgment and reconciles uncertain results.</desc>
   <defs>
     <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
       <path d="M1 1l5 3-5 3" fill="none" stroke="#725787" stroke-width="1.3" stroke-linejoin="round"/>
@@ -11,7 +11,7 @@
   <g font-family="Inter, Arial, sans-serif">
     <text x="44" y="42" fill="#d9c6e9" font-size="15">Zero-Touch Week · Expenses</text>
     <text x="44" y="89" fill="#fff" font-size="36" font-weight="400">Receipt processing on Azure</text>
-    <text x="1076" y="84" text-anchor="end" fill="#73e7b0" font-size="15">€500 / employee / month</text>
+    <text x="1076" y="84" text-anchor="end" fill="#73e7b0" font-size="15">$500 USD limit / employee / month</text>
     <text x="44" y="172" fill="#615768" font-size="14" font-weight="650">EMPLOYEE</text>
     <text x="250" y="172" fill="#66359a" font-size="14" font-weight="650">AZURE WORKLOAD</text>
     <text x="898" y="172" fill="#615768" font-size="14" font-weight="650">CLAIM OUTCOME</text>
@@ -36,9 +36,9 @@
     <rect x="898" y="206" width="178" height="69" rx="7" fill="#fff6ea" stroke="#e1c3a1"/>
     <g font-size="16" font-weight="650" fill="#241c29">
       <text x="57" y="251">Mobile React</text>
-      <text x="264" y="251">Go receipt API</text>
+      <text x="264" y="251">Receipt API</text>
       <text x="464" y="251" font-size="14.5">Document Intelligence</text>
-      <text x="680" y="251">Go policy engine</text>
+      <text x="680" y="251">Policy engine</text>
       <text x="264" y="394">Private Azure Blob</text>
       <text x="680" y="394">Azure PostgreSQL</text>
       <text x="911" y="230">Reviewer queue</text>
@@ -57,12 +57,12 @@
       <text x="911" y="444">Supported expense API</text><text x="911" y="462">Ack + reconciliation</text>
     </g>
     <text x="448" y="394" fill="#66359a" font-size="14" font-weight="650">Async processing</text>
-    <text x="448" y="417" fill="#615768" font-size="13">PostgreSQL outbox in pilot</text>
+    <text x="448" y="417" fill="#615768" font-size="13">Proposed PostgreSQL outbox</text>
     <text x="448" y="435" fill="#615768" font-size="13">Kairos/Nexus Kafka at scale</text>
     <rect x="44" y="514" width="1032" height="73" rx="7" fill="#fff" stroke="#e0dae4"/>
     <g font-size="13" fill="#615768">
       <text x="62" y="539" fill="#241c29" font-weight="650">Runtime</text>
-      <text x="62" y="563">One Go deployment in pilot · AKS workers at scale</text>
+      <text x="62" y="563">Pilot: App Service + Node.js + PostgreSQL</text>
       <text x="456" y="539" fill="#241c29" font-weight="650">Data boundary</text>
       <text x="456" y="563">Managed identities · regional storage · evidence expiry</text>
       <text x="847" y="539" fill="#241c29" font-weight="650">Observability</text>

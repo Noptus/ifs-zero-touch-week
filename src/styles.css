@@ -346,3 +346,25 @@ details[open] > summary svg:last-child { transform: rotate(180deg); }
 @media (pointer: coarse) {
   input:not([type=checkbox]), select, textarea { font-size: 16px; }
 }
+
+.live-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 1rem; }
+.live-section > .inline-note { margin-bottom: 1rem; flex-wrap: wrap; }
+.live-card { min-width: 0; padding: 1rem; }
+.live-card h2, .live-toolbar { display: flex; align-items: center; justify-content: space-between; gap: .7rem; margin: 0 0 .85rem; flex-wrap: wrap; }
+.live-card h2 { justify-content: flex-start; font-size: 1rem; }
+.live-toolbar select { margin-left: .3rem; padding: .35rem; color: inherit; background: #17131e; border: 1px solid #594a70; border-radius: .2rem; }
+.live-preview { display: block; width: 100%; aspect-ratio: 16/9; object-fit: contain; background: #100e13; border-radius: .25rem; }
+.live-caption, .live-observations small { font-size: .76rem; opacity: .8; }
+.live-caption a { display: inline-flex; align-items: center; gap: .3rem; }
+.live-observations { list-style: none; padding: 0; max-height: 25rem; overflow: auto; }
+.live-observations li { padding: .55rem 0; border-top: 1px solid #413650; }
+.live-observations p { margin: .25rem 0; }
+@media(max-width: 700px) { .live-grid { grid-template-columns: minmax(0,1fr); } }
+.week-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .85rem; padding-block: .75rem; }
+.week-toolbar input { margin-left: .25rem; padding: .3rem; color: inherit; background: #17131e; border: 1px solid #594a70; border-radius: .2rem; }
+
+@media (max-width: 370px) {
+  .header-inner { flex-wrap: wrap; gap: 0 .65rem; justify-content: flex-start; padding-top: .45rem; }
+  .site-nav { flex: 1 1 100%; gap: .85rem; }
+  .site-nav a { min-height: 38px; }
+}

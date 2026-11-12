@@ -42,8 +42,8 @@ test.describe('Mobile worker confirmation', () => {
     await page.getByLabel('Project for 0-e4').selectOption('Northline Retrofit');
     await page.getByRole('button', { name: 'Confirm gap' }).click();
     await page.getByRole('button', { name: 'Submit draft' }).click();
-    await expect(page.getByText(/exceeds this demo/)).toBeVisible();
-    await expect(page.getByText(/differs from the source work order/)).toBeVisible();
+    await expect(page.getByText(/exceeds the 40-hour/)).toBeVisible();
+    await expect(page.getByText(/project allocation changes/)).toBeVisible();
     await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
 
     await page.getByRole('textbox', { name: /manager note/i }).fill('Confirm project with dispatch.');
@@ -57,11 +57,12 @@ test.describe('Mobile worker confirmation', () => {
     await page.getByLabel('I reviewed the flagged exceptions.').check();
     await page.getByRole('button', { name: 'Approve', exact: true }).click();
     await expect(page.getByRole('status')).toContainText('Approved in the demo');
-    await page.getByRole('button', { name: /Mika Chen/ }).click();
-    await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
-    await page.getByRole('textbox', { name: /manager note/i }).fill('Missing end-of-shift evidence.');
-    await page.getByRole('button', { name: 'Reject', exact: true }).click();
-    await expect(page.getByRole('status')).toContainText('Missing end-of-shift evidence.');
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download approved CSV' }).click();
+    expect((await downloadPromise).suggestedFilename()).toBe('approved-timesheet-2026-11-09-r4.csv');
+    await page.reload();
+    await page.getByRole('button', { name: 'Manager inbox' }).click();
+    await expect(page.getByRole('status')).toContainText('Approved in the demo');
   });
 });
 

@@ -2,7 +2,7 @@
 
 **Status** · Proposed for customer discovery and engineering estimation
 
-**Pilot** · One employee group, EUR purchases, one finance policy, one sandbox destination
+**Pilot** · One employee group, USD purchases, one finance policy, one sandbox destination
 
 **Decision owners** · Customer expense policy owner, finance operations lead, and product owner
 
@@ -18,7 +18,7 @@ Field staff buy work supplies wherever they can get them. The product should tur
 
 ## Scope and policy
 
-**Pilot required.** Accept a photo or digital image from any merchant. Extract and review EUR receipt fields, decide eligibility per line, compare available price references, and enforce a **€500 allowance per employee per calendar month**. The purchase date selects the period under the tenant's accounting calendar. Use gross eligible item amounts in euro cents. The allowance, allowed categories, price references and authority to post are versioned tenant policy.
+**Pilot required.** Accept a photo or digital image from any merchant. Extract and review USD receipt fields, decide eligibility per line, compare available price references, and enforce a **$500 USD eligible reimbursement limit per employee per calendar month**. The purchase date selects the period under the tenant's accounting calendar. Use gross eligible item amounts in US cents. The allowance, allowed categories, price references and authority to post are versioned tenant policy.
 
 **Later options.** Multi-currency conversion, approved exceptions to the cap, automated corporate-card matching, and optional receipt provenance or forensic models. Pilot items without reliable evidence or a comparable price take the review path. A typical price or readable receipt alone does not authorize payment.
 
@@ -29,11 +29,11 @@ The policy owner must confirm who can review claims, which work categories and p
 | ID | Requirement | Acceptance check |
 | --- | --- | --- |
 | EXP-01 | Accept camera capture and image attachment on a phone. Preserve original evidence with scoped access, a stable capture key and visible retry state. | A receipt from an unknown merchant enters the same flow. An interrupted upload can resume or retry without creating a second claim. Unreadable files offer retake or manual entry. |
-| EXP-02 | Extract merchant, purchase date, currency, receipt total, and line descriptions, quantities and amounts with source references. Show and accept corrections. | A €92.30 receipt is itemized into an €89.90 cordless drill and a €2.40 chocolate bar. Low-confidence fields remain editable and enter review where they affect payment. |
+| EXP-02 | Extract merchant, purchase date, currency, receipt total, and line descriptions, quantities and amounts with source references. Show and accept corrections. | A $100.99 receipt is itemized into a $99.00 cordless drill and a $1.99 chocolate bar. Low-confidence fields remain editable and enter review where they affect payment. |
 | EXP-03 | Evaluate line eligibility, tax and discount treatment, and work allocation using versioned tenant rules. Maintain an explicit disposition and reason per line. | A work-related drill is proposed and personal chocolate is excluded. Only eligible cents enter the claim. Unknown purpose and unreconciled totals go to review. |
-| EXP-04 | Compare gross unit prices against a versioned comparable range using item specification, quantity, date, currency, market and tax basis. Allow the check to abstain. | An €89.90 drill falls within the example €40–€140 range. A €199.90 drill or an unmatched specification goes to review with the reason and reference shown. |
+| EXP-04 | Compare gross unit prices against a versioned comparable range using item specification, quantity, date, currency, market and tax basis. Allow the check to abstain. | A $99.00 drill falls within the example $70–$140 range. A $218.00 drill or an unmatched specification goes to review with the reason and reference shown. |
 | EXP-05 | Treat exact receipt replays as idempotent. Surface likely duplicates, inconsistent data and evidence of synthesis or manipulation as review signals. Show uncertain origin separately. | Retrying the same upload reuses the claim. Different receipts with similar headers can be adjudicated. An explicit AI-source marker triggers review. An unmarked image remains unverified. |
-| EXP-06 | Show available balance and reserve eligible cents once after authorization. Apply the cap transactionally against posted plus reserved cents for the same employee and month. | With €320 used or reserved, the drill reserves €89.90 and leaves €90.10. Two parallel €100 claims against €180 available cannot both reserve. An over-cap claim enters review without a reservation. |
+| EXP-06 | Show available balance and reserve eligible cents once after authorization. Apply the cap transactionally against posted plus reserved cents for the same employee and month. | With $320 used or reserved, the drill reserves $99.00 and leaves $81.00. Two parallel $99 claims against $180 available cannot both reserve. An over-cap claim enters review without a reservation. |
 | EXP-07 | Support one employee confirmation on a clean draft and a reasoned reviewer decision on exceptions. Apply tenant approval policy before any posting. | A clear claim can reach ready status with one confirmation. Material corrections, unresolved FX and ambiguous evidence route to review. A reviewer can return, accept eligible lines within the cap, or reject with a reason. |
 | EXP-08 | Post only authorized eligible lines and track the authoritative result. Finalize the reservation only on acknowledgment and release it on withdrawal or definitive failure under policy. | A lost response holds the reservation while the adapter checks for the existing posting. Retrying cannot pay twice. A reviewer can trace the result to the employee confirmation, policy and line decisions. |
 
@@ -63,7 +63,7 @@ Compare against the current expense workflow using a representative, redacted re
 | --- | --- | --- |
 | Employee effort | Median active minutes from capture through submission, including corrections. Report the 90th percentile. | At least 30% lower than baseline. |
 | One-confirmation share | Claims with exactly one worker confirmation, no field edits and no extra evidence request ÷ all in-scope submitted claims. | At least 70%, subject to confirmed policy and sample size. |
-| Eligible amount accuracy | In-scope claims whose proposed eligible euro cents match the independent finance-reviewed amount ÷ in-scope claims with an approved reference. Report missing-reference coverage and false approvals separately. | Agree the threshold before shadow mode. |
+| Eligible amount accuracy | In-scope claims whose proposed eligible US cents match the independent finance-reviewed amount ÷ in-scope claims with an approved reference. Report missing-reference coverage and false approvals separately. | Agree the threshold before shadow mode. |
 | Exception load | Legitimate claims routed to avoidable review ÷ legitimate claims with a reviewed outcome. Report review minutes and reason mix. | No material increase in review effort against the baseline. |
 | Ledger and posting integrity | Over-cap, duplicate, personal-item and unauthorized postings in fault tests and the observed pilot. | Zero in acceptance tests. Any observed harmful posting blocks expansion until resolved. |
 

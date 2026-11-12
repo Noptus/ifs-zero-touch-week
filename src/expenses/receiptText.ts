@@ -10,12 +10,15 @@ export function parseMoney(value: string) {
   return Number.isSafeInteger(cents) && cents <= 100_000_000 ? cents : null;
 }
 
-function findDate(text: string) {
+function findDate(text: string, currency = '') {
   const iso = text.match(/\b\d{4}-\d{2}-\d{2}\b/)?.[0];
   if (iso && validDate(iso)) return iso;
   const local = text.match(/\b(\d{1,2})[/.](\d{1,2})[/.](\d{4})\b/);
   if (!local) return '';
-  const date = `${local[3]}-${local[2].padStart(2, '0')}-${local[1].padStart(2, '0')}`;
+  const first = Number(local[1]), second = Number(local[2]);
+  if (first <= 12 && second <= 12 && first !== second && !currency) return '';
+  const monthFirst = second > 12 || (first <= 12 && second <= 12 && currency === 'USD');
+  const date = `${local[3]}-${local[monthFirst ? 1 : 2].padStart(2, '0')}-${local[monthFirst ? 2 : 1].padStart(2, '0')}`;
   return validDate(date) ? date : '';
 }
 
@@ -39,7 +42,7 @@ export function parseReceiptText(text: string, confidence: number, aiSignal: boo
     ? merchantCandidate.slice(0, 100) : '';
   const currencies = [
     /\bEUR\b|€/i.test(text) ? 'EUR' : '',
-    /\bUSD\b|\$/i.test(text) ? 'USD' : '',
+    /\bUSD\b|US\$/i.test(text) ? 'USD' : '',
     /\bGBP\b|£/i.test(text) ? 'GBP' : '',
   ].filter(Boolean);
   const currency = currencies.length === 1 ? currencies[0] : '';
@@ -61,7 +64,7 @@ export function parseReceiptText(text: string, confidence: number, aiSignal: boo
     items.push({ description: label.slice(quantity?.[0].length ?? 0, 100), quantity: Number(quantity?.[1] ?? 1), cents });
   }
 
-  return { merchant, date: findDate(text), currency, total, lines: items.slice(0, 50), source: 'photo', aiSignal, lowConfidence: confidence < 75 || items.length > 50, digest };
+  return { merchant, date: findDate(text, currency), currency, total, lines: items.slice(0, 50), source: 'photo', aiSignal, lowConfidence: confidence < 75 || items.length > 50, digest };
 }
 
 const aiTypes = ['trainedAlgorithmicMedia', 'compositeWithTrainedAlgorithmicMedia'];

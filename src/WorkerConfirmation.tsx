@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { ArrowRight, ChevronDown, CircleAlert } from 'lucide-react';
-import { activities, clock, dates, days, duration, minutes, projects, reportableMinutes, sumMinutes } from './workflow';
+import { activities, clock, days, duration, minutes, projects, reportableMinutes, sumMinutes } from './workflow';
 import type { Activity, Interval, Project } from './workflow';
 
 type Props = {
   rows: Interval[];
   day: number;
+  week: string;
   status: string;
   editable: boolean;
   managerNote: string;
@@ -13,11 +14,18 @@ type Props = {
   onSelectDay: (day: number) => void;
   onEdit: (id: string, patch: Partial<Interval>) => void;
   onSubmit: () => void;
+  onAdd: () => void;
+  onRemove: (id: string) => void;
 };
 
 export default function WorkerConfirmation({
-  rows, day, status, editable, managerNote, errors, onSelectDay, onEdit, onSubmit,
+  rows, day, week, status, editable, managerNote, errors, onSelectDay, onEdit, onSubmit, onAdd, onRemove,
 }: Props) {
+  const dates = days.map((_, index) => {
+    const date = new Date(week);
+    date.setUTCDate(date.getUTCDate() + index);
+    return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' }).format(date);
+  });
   const [expanded, setExpanded] = useState<string | null>(null);
   const dayRows = rows.filter(entry => entry.day === day);
   const unresolved = rows.filter(entry => !entry.confirmed).length;
@@ -30,7 +38,7 @@ export default function WorkerConfirmation({
   return <div className="worker-screen">
     <section className="worker-phone" aria-label="Worker timesheet">
       <header className="phone-header">
-        <div className="worker"><span className="avatar" aria-hidden="true">AM</span><div><h3>Ari’s timesheet</h3><small>9–13 November 2026</small></div></div>
+        <div className="worker"><span className="avatar" aria-hidden="true">AM</span><div><h3>Worker timesheet</h3><small>{dates[0]} – {dates[4]}</small></div></div>
         <span className="tag">{status}</span>
       </header>
 
@@ -70,6 +78,7 @@ export default function WorkerConfirmation({
                     <label>Project<select aria-label={`Project for ${entry.id}`} value={entry.project} onChange={e => { const project = e.target.value as Project; onEdit(entry.id, { project, order: project === projects[0] ? 'WO-4821' : 'WO-4917' }); }}>{projects.map(project => <option key={project}>{project}</option>)}</select></label>
                   </div> : <p>{entry.order} · {entry.edited ? 'Corrected by worker' : 'Proposed from evidence'}</p>}
                   {editable && <div className="phone-editor-actions">
+                    <button type="button" className="text-button" onClick={() => { onRemove(entry.id); setExpanded(null); }}>Remove interval</button>
                     {entry.confirmed
                       ? <button type="button" className="button small" onClick={() => close(entry.id)}>Done</button>
                       : <button type="button" className="button small" disabled={entry.activity === 'Gap'} onClick={() => { onEdit(entry.id, { confirmed: true }); close(entry.id); }}>Confirm gap</button>}
@@ -79,6 +88,8 @@ export default function WorkerConfirmation({
             </li>;
           })}
         </ul>
+
+        {editable && <button type="button" className="button small" disabled={rows.length >= 80} onClick={onAdd}>Add interval</button>}
 
         <details className="phone-breakdown">
           <summary>Weekly breakdown <ChevronDown size={15} /></summary>

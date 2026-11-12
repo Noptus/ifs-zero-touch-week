@@ -16,22 +16,22 @@ export const allowance = 50_000;
 export const sampleMonth = '2026-11';
 export const startingLedger = { [sampleMonth]: 32_000 };
 export const sampleReceipt: Receipt = {
-  merchant: 'Harbor Hardware', date: '2026-11-09', currency: 'EUR', total: 9_230,
+  merchant: 'Harbor Hardware', date: '2026-11-09', currency: 'USD', total: 10_099,
   lines: [
-    { description: 'Cordless drill', quantity: 1, cents: 8_990 },
-    { description: 'Chocolate bar', quantity: 1, cents: 240 },
+    { description: 'Cordless drill', quantity: 1, cents: 9_900 },
+    { description: 'Chocolate bar', quantity: 1, cents: 199 },
   ],
   source: 'sample', aiSignal: false, digest: 'sample-hardware-09',
 };
 export const flaggedReceipt: Receipt = {
-  ...sampleReceipt, date: '2026-11-10', total: 20_230, aiSignal: true, digest: 'sample-hardware-10',
-  lines: [{ description: 'Cordless drill', quantity: 1, cents: 19_990 }, sampleReceipt.lines[1]],
+  ...sampleReceipt, date: '2026-11-10', total: 21_999, aiSignal: true, digest: 'sample-hardware-10',
+  lines: [{ description: 'Cordless drill', quantity: 1, cents: 21_800 }, sampleReceipt.lines[1]],
 };
 
-const euro = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
+const dollar = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
-export function euros(cents: number) {
-  return euro.format(cents / 100);
+export function dollars(cents: number) {
+  return dollar.format(cents / 100);
 }
 
 export function validDate(value: string) {
@@ -53,7 +53,7 @@ type Decision = { status: 'Eligible' | 'Excluded' | 'Review'; reason: string; wo
 
 function decide(line: Line, currency: string): Decision {
   const name = line.description.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
-  if (/\b(chocolate|chocolat|candy|bonbon|snack|soda)\b/.test(name)) {
+  if (/\b(chocolate|chocolat|candy|bonbon|snack|soda|strongbow|cider|beer|wine|alcohol)\b/.test(name)) {
     return { status: 'Excluded', reason: 'Personal item under the pilot policy.', work: false };
   }
   const cordlessDrill = /\bcordless drill\b|\bperceuse sans fil\b/.test(name);
@@ -62,14 +62,14 @@ function decide(line: Line, currency: string): Decision {
     return { status: 'Review', reason: 'Confirm the item, quantity and amount.', work };
   }
   if (!work) return { status: 'Review', reason: 'Work purpose needs confirmation.', work: false };
-  if (currency !== 'EUR') return { status: 'Review', reason: 'Confirm currency and conversion before applying the EUR allowance.', work: true };
+  if (currency !== 'USD') return { status: 'Review', reason: 'Confirm currency and conversion before applying the USD limit.', work: true };
   if (!cordlessDrill) return { status: 'Review', reason: 'Work category matched. A comparable price is needed.', work: true };
-  const minimum = 4_000 * line.quantity;
+  const minimum = 7_000 * line.quantity;
   const maximum = 14_000 * line.quantity;
   if (line.cents < minimum || line.cents > maximum) {
-    return { status: 'Review', reason: 'Outside the example €40–€140 range per cordless drill.', work: true };
+    return { status: 'Review', reason: 'Outside the example $70–$140 range per cordless drill.', work: true };
   }
-  return { status: 'Eligible', reason: 'Work tool within the example €40–€140 range per drill.', work: true };
+  return { status: 'Eligible', reason: 'Work tool within the example $70–$140 range per drill.', work: true };
 }
 
 export function assess(receipt: Receipt, spent: number, possibleDuplicate = false) {
@@ -88,13 +88,13 @@ export function assess(receipt: Receipt, spent: number, possibleDuplicate = fals
     (receipt.total === null || receipt.total <= 0) && 'receipt total',
   ].filter(Boolean);
   if (missingDetails.length) issues.push(`Missing details: ${missingDetails.join(', ')}.`);
-  if (receipt.currency !== 'EUR') issues.push('EUR is required for automatic allowance checks.');
+  if (receipt.currency !== 'USD') issues.push('USD is required for automatic limit checks.');
   if (!receipt.lines.length) issues.push('Add at least one receipt item.');
   const lineTotal = receipt.lines.reduce((sum, line) => sum + (line.cents ?? 0), 0);
   if (receipt.total !== null && receipt.lines.length > 0 && receipt.lines.every(line => line.cents !== null) && lineTotal !== receipt.total) {
     issues.push('Item amounts do not add up to the receipt total. Check for tax, discounts or missing lines.');
   }
-  if (receipt.currency === 'EUR' && workRequested > remaining) issues.push('Work items exceed the remaining monthly allowance.');
+  if (receipt.currency === 'USD' && workRequested > remaining) issues.push('Work items exceed the remaining monthly limit.');
   const needsReview = issues.length > 0 || decisions.some(item => item.status === 'Review');
   return { decisions, eligible, remaining, issues, needsReview };
 }

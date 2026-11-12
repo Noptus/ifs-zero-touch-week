@@ -1,31 +1,35 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { ArrowRight, Camera, Check, ChevronDown, CircleAlert, FileImage, ReceiptText, Upload } from 'lucide-react';
 import { base } from '../SiteFrame';
-import { allowance, assess, euros, flaggedReceipt, receiptKeys, sampleMonth, sampleReceipt, startingLedger, validDate } from './policy';
+import { allowance, assess, dollars, flaggedReceipt, receiptKeys, sampleMonth, sampleReceipt, validDate } from './policy';
 import type { Line, Receipt } from './policy';
 import { parseMoney } from './receiptText';
+import { receiptPhoto, usePilot } from '../pilot/client';
+import { isReceiptMatch, spentFor } from '../pilot/model';
+import type { Claim as SavedClaim } from '../pilot/model';
 
-type Claim = { receipt: Receipt; originalKeys: string[]; image: string };
-type Result = { state: 'ready' | 'review'; eligible: number; possibleDuplicate: boolean };
-type Session = { ledger: Record<string, number>; submitted: string[]; result: Result | null };
+type Claim = { id: string; revision: number; receipt: Receipt; image: string };
+const stateLabels = { review: 'Awaiting review', reserved: 'Reserved', approved: 'Approved', returned: 'Changes requested', rejected: 'Rejected' };
 
 const imageTypes = ['image/jpeg', 'image/png', 'image/webp'];
 const imageAccept = imageTypes.join(',');
 const blankLine: Line = { description: '', quantity: 1, cents: null };
 const amountText = (cents: number | null) => cents === null ? '' : (cents / 100).toFixed(2);
-const hasMatchingKey = (keys: string[], submitted: string[], prefix: string) =>
-  keys.some(key => key.startsWith(prefix) && submitted.includes(key));
-
 function displayAmount(cents: number | null, currency: string) {
   if (cents === null) return '—';
-  if (currency === 'EUR') return euros(cents);
+  if (currency === 'USD') return dollars(cents);
   return `${amountText(cents)}${currency ? ` ${currency}` : ''}`;
 }
 
 export default function ExpenseDemo() {
   const [claim, setClaim] = useState<Claim | null>(null);
-  const [session, setSession] = useState<Session>({ ledger: startingLedger, submitted: [], result: null });
+  const pilot = usePilot();
+  const pendingPhoto = useRef<Blob | null>(null);
+  const [correcting, setCorrecting] = useState(false);
+  const [note, setNote] = useState('');
+  const [selected, setSelected] = useState<number[]>([]);
+  const [photoMissing, setPhotoMissing] = useState(false);
   const [scanning, setScanning] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
@@ -36,23 +40,45 @@ export default function ExpenseDemo() {
 
   const receipt = claim?.receipt;
   const month = receipt && validDate(receipt.date) ? receipt.date.slice(0, 7) : '';
-  const balanceMonth = receipt ? month : sampleMonth;
-  const spent = session.ledger[balanceMonth] ?? 0;
-  const result = session.result;
-  const keys = claim ? [...new Set([...claim.originalKeys, ...receiptKeys(claim.receipt)])] : [];
-  const duplicate = !result && hasMatchingKey(keys, session.submitted, 'file:');
-  const possibleDuplicate = result?.possibleDuplicate ?? (!duplicate && hasMatchingKey(keys, session.submitted, 'transaction:'));
-  const check = receipt ? assess(receipt, spent - (result?.state === 'ready' ? result.eligible : 0), possibleDuplicate) : null;
+  const balanceMonth = receipt ? month : (pilot.actor.demo ? sampleMonth : new Date().toISOString().slice(0, 7));
+  const spent = spentFor(pilot.workspace, balanceMonth, pilot.actor.demo);
+  const saved = pilot.workspace.claims.find(entry => entry.id === claim?.id);
+  const stale = Boolean(saved && claim && saved.revision !== claim.revision);
+  const result = correcting && !stale ? undefined : saved;
+  const keys = receipt ? receiptKeys(receipt) : [];
+  const duplicate = !result && isReceiptMatch(keys, pilot.workspace.claims, 'file:', claim?.id);
+  const possibleDuplicate = !duplicate && isReceiptMatch(keys, pilot.workspace.claims, 'transaction:', claim?.id);
+  const check = receipt ? assess(receipt, spent - (['reserved', 'approved'].includes(saved?.state ?? '') ? (saved?.amount ?? 0) : 0), possibleDuplicate) : null;
 
-  function start(receipt: Receipt, image: string) {
-    setClaim({ receipt, originalKeys: receiptKeys(receipt), image });
-    setSession(current => ({ ...current, result: null }));
+  function start(receipt: Receipt, image: string, id: string = crypto.randomUUID(), revision = 0) {
+    setClaim({ id, revision, receipt, image });
+    setCorrecting(false);
+    setNote('');
+    setSelected([]);
+    setPhotoMissing(false);
     setError('');
   }
 
   function loadSample(flagged: boolean) {
+    pendingPhoto.current = null;
     setPhotoUrl('');
     start(flagged ? flaggedReceipt : sampleReceipt, `${base}receipts/${flagged ? 'flagged-shop.png' : 'hardware-shop.png'}`);
+  }
+
+  async function openSaved(entry: SavedClaim) {
+    pendingPhoto.current = null;
+    if (entry.receipt.source === 'sample') {
+      setPhotoUrl('');
+      start(entry.receipt, `${base}receipts/${entry.receipt.aiSignal ? 'flagged-shop.png' : 'hardware-shop.png'}`, entry.id, entry.revision);
+      return;
+    }
+    try {
+      const file = entry.receipt.digest && await receiptPhoto(entry.receipt.digest);
+      const url = file ? URL.createObjectURL(file) : '';
+      setPhotoUrl(url);
+      start(entry.receipt, url, entry.id, entry.revision);
+      setPhotoMissing(!url);
+    } catch { setError('Could not open the saved receipt photo.'); }
   }
 
   async function upload(event: ChangeEvent<HTMLInputElement>) {
@@ -65,6 +91,7 @@ export default function ExpenseDemo() {
     }
     const url = URL.createObjectURL(file);
     setPhotoUrl(url);
+    pendingPhoto.current = file;
     setClaim(null);
     setError('');
     setScanning(0);
@@ -87,21 +114,25 @@ export default function ExpenseDemo() {
     if (receipt) edit({ lines: receipt.lines.map((line, i) => i === index ? { ...line, ...patch } : line) });
   }
 
-  function submit() {
-    if (!receipt || !keys.length || !receipt.lines.length) return;
-    setSession(current => {
-      if (current.result || hasMatchingKey(keys, current.submitted, 'file:')) return current;
-      const used = current.ledger[month] ?? 0;
-      const possibleDuplicate = hasMatchingKey(keys, current.submitted, 'transaction:');
-      const outcome = assess(receipt, used, possibleDuplicate);
-      if (!outcome.needsReview && outcome.eligible === 0) return current;
-      const ready = !outcome.needsReview;
-      return {
-        ledger: ready ? { ...current.ledger, [month]: used + outcome.eligible } : current.ledger,
-        submitted: [...current.submitted, ...keys],
-        result: { state: ready ? 'ready' : 'review', eligible: outcome.eligible, possibleDuplicate },
-      };
-    });
+  async function submit() {
+    if (!receipt || !claim || !keys.length || !receipt.lines.length) return;
+    const next = await pilot.run({ type: 'expense.submit', id: claim.id, revision: claim.revision, receipt: { ...receipt, currency: receipt.currency as 'USD' | 'EUR' | 'GBP' | '' } }, pendingPhoto.current ?? undefined);
+    if (next) {
+      const record = next.workspace.claims.find(entry => entry.id === claim.id)!;
+      setClaim({ ...claim, revision: record.revision, receipt: record.receipt });
+      setCorrecting(false);
+      pendingPhoto.current = null;
+    }
+  }
+
+  async function review(decision: 'approved' | 'returned' | 'rejected') {
+    if (!saved || !claim || stale) return;
+    const next = await pilot.run({ type: 'expense.review', id: saved.id, revision: saved.revision, decision, note, lineIndexes: selected });
+    if (next) {
+      setClaim({ ...claim, revision: saved.revision + 1 });
+      setNote('');
+      setSelected([]);
+    }
   }
 
   return <div className="expense-panel">
@@ -112,31 +143,39 @@ export default function ExpenseDemo() {
         <div className="expense-actions">
           <label className="button primary upload-button">
             <Camera size={15} /> Take photo
-            <input className="sr-only" aria-label="Take photo" type="file" accept={imageAccept} capture="environment" disabled={scanning !== null} onChange={upload} />
+            <input className="sr-only" aria-label="Take photo" type="file" accept={imageAccept} capture="environment" disabled={scanning !== null || pilot.busy || !pilot.actor.canSubmit} onChange={upload} />
           </label>
           <label className="button upload-button">
             <Upload size={15} /> Choose image
-            <input className="sr-only" aria-label="Choose receipt image" type="file" accept={imageAccept} disabled={scanning !== null} onChange={upload} />
+            <input className="sr-only" aria-label="Choose receipt image" type="file" accept={imageAccept} disabled={scanning !== null || pilot.busy || !pilot.actor.canSubmit} onChange={upload} />
           </label>
         </div>
-        <div className="expense-actions sample-actions">
-          <button type="button" className="text-button" disabled={scanning !== null} onClick={() => loadSample(false)}>Try sample receipt</button>
-          <button type="button" className="text-button" disabled={scanning !== null} onClick={() => loadSample(true)}>Try flagged sample</button>
-        </div>
+        {pilot.actor.demo && <div className="expense-actions sample-actions">
+          <button type="button" className="text-button" disabled={scanning !== null || pilot.busy || !pilot.actor.canSubmit} onClick={() => loadSample(false)}>Try sample receipt</button>
+          <button type="button" className="text-button" disabled={scanning !== null || pilot.busy || !pilot.actor.canSubmit} onClick={() => loadSample(true)}>Try flagged sample</button>
+        </div>}
         {scanning !== null && <p className="scan-progress" role="status">Reading receipt… {scanning}%</p>}
-        {error && <p className="inline-note" role="alert"><CircleAlert size={15} /> {error}</p>}
+        {(error || pilot.error) && <p className="inline-note" role="alert"><CircleAlert size={15} /> {error || pilot.error}</p>}
       </div>
       <aside className="expense-allowance" aria-label="Monthly allowance">
-        <span className="micro">{balanceMonth ? `MONTHLY ALLOWANCE · ${balanceMonth}` : 'MONTHLY ALLOWANCE'}</span>
-        <strong>{euros(allowance)}</strong>
-        <p>{balanceMonth ? <>{euros(spent)} used or reserved · <b>{euros(Math.max(0, allowance - spent))} left</b></> : 'Confirm the purchase date to check the balance.'}</p>
-        <small>{balanceMonth === sampleMonth ? 'Includes fictional prior claims.' : 'Demo ledger for this session.'}</small>
+        <span className="micro">{balanceMonth ? `MONTHLY REIMBURSEMENT LIMIT · USD · ${balanceMonth}` : 'MONTHLY REIMBURSEMENT LIMIT · USD'}</span>
+        <strong>{dollars(allowance)}</strong>
+        <p>{balanceMonth ? <>{dollars(spent)} used or reserved · <b>{dollars(Math.max(0, allowance - spent))} left</b></> : 'Confirm the purchase date to check the balance.'}</p>
+        <small>{pilot.actor.demo && balanceMonth === sampleMonth ? 'Per employee. Includes $320 in fictional prior claims.' : 'Per employee, per calendar month.'}</small>
       </aside>
+    </div>
+    <div className="claim-history">
+      <div className="expense-actions"><strong>Saved claims</strong><button type="button" className="text-button" disabled={pilot.busy} onClick={() => { void pilot.run(); }}>Refresh</button></div>
+      {!pilot.workspace.claims.length && <small>No submissions yet.</small>}
+      {pilot.workspace.claims.map(entry => <button className="button small" key={entry.id} type="button" disabled={pilot.busy || scanning !== null} aria-pressed={claim?.id === entry.id} onClick={() => { void openSaved(entry); }}>
+        {entry.receipt.merchant || 'Receipt'} · {entry.receipt.date || 'Undated'} · {stateLabels[entry.state]}
+      </button>)}
     </div>
     {claim && receipt && check && <div className="expense-review">
       <figure className="receipt-figure">
         <figcaption><FileImage size={15} /> {receipt.source === 'sample' ? 'Fictional shop receipt' : 'Receipt photo'}</figcaption>
-        <img src={claim.image} alt={receipt.source === 'sample' ? 'Fictional Harbor Hardware receipt' : 'Uploaded receipt photo'} />
+        {claim.image && <img src={claim.image} alt={receipt.source === 'sample' ? 'Fictional Harbor Hardware receipt' : 'Uploaded receipt photo'} />}
+        {photoMissing && <p>Original photo unavailable.</p>}
       </figure>
       <div className="expense-items">
         <div className="expense-review-head">
@@ -176,16 +215,35 @@ export default function ExpenseDemo() {
         {check.issues.length > 0 && <ul className="expense-issues">
           {check.issues.map(issue => <li className="inline-note" key={issue}><CircleAlert size={15} /> {issue}</li>)}
         </ul>}
-        {duplicate && <p className="inline-note" role="alert"><CircleAlert size={15} /> This receipt was already submitted in this session.</p>}
+        {duplicate && <p className="inline-note" role="alert"><CircleAlert size={15} /> This receipt was already submitted.</p>}
         <div className="expense-submit">
-          <div><small>Policy-eligible items</small><strong>{euros(check.eligible)}</strong></div>
-          {!result && <button type="button" className="button primary" disabled={duplicate || !keys.length || !receipt.lines.length || (!check.needsReview && check.eligible === 0)} onClick={submit}>
-            {check.needsReview ? 'Send for review' : 'Confirm and submit'} <ArrowRight size={15} />
+          <div><small>Policy-eligible items</small><strong>{dollars(check.eligible)}</strong></div>
+          {!result && <button type="button" className="button primary" disabled={!pilot.actor.canSubmit || pilot.busy || duplicate || !keys.length || !receipt.lines.length || (!check.needsReview && check.eligible === 0)} onClick={submit}>
+            {duplicate ? 'Already submitted' : check.needsReview || !pilot.actor.demo ? 'Send for review' : 'Confirm and submit'} <ArrowRight size={15} />
           </button>}
         </div>
-        {result ? <p className={`inline-note ${result.state === 'ready' ? 'positive' : ''}`} role="status">
-          {result.state === 'ready' ? <><Check size={16} /> {euros(result.eligible)} reserved in the demo ledger. Ready for reimbursement processing.</> : <><CircleAlert size={16} /> Sent to exception review in the demo. The allowance is unchanged.</>}
+        {result ? <p className={`inline-note ${['approved', 'reserved'].includes(result.state) ? 'positive' : ''}`} role="status">
+          {result.state === 'reserved' ? <><Check size={16} /> {dollars(result.amount)} reserved in the demo ledger.</> :
+            result.state === 'approved' ? <><Check size={16} /> {dollars(result.amount)} approved. No payment has been made.</> :
+              result.state === 'review' ? <><CircleAlert size={16} /> Sent to exception review. The limit balance is unchanged.</> :
+                <><CircleAlert size={16} /> {stateLabels[result.state]}: {result.note}</>}
         </p> : <p className="expense-attestation">By submitting, you confirm work use for the included items. This demo makes no payment.</p>}
+        {stale && saved && <button type="button" className="button small" onClick={() => { void openSaved(saved); }}>Open latest revision</button>}
+        {!stale && result?.state === 'returned' && pilot.actor.canSubmit && <button type="button" className="button small" onClick={() => setCorrecting(true)}>Correct and resubmit</button>}
+        {!stale && result?.state === 'review' && pilot.actor.canReview && <details className="expense-editor">
+          <summary>Reviewer decision <ChevronDown size={15} /></summary>
+          <p>Compare with the original photo, verify work use and check any pricing exception before selecting lines.</p>
+          {receipt.lines.map((line, i) => <label className="checkbox" key={i}>
+            <input type="checkbox" disabled={check.decisions[i].status === 'Excluded' || !line.cents} checked={selected.includes(i)} onChange={e => setSelected(previous => e.target.checked ? [...previous, i] : previous.filter(index => index !== i))} />
+            {line.description || 'Unidentified item'} · {displayAmount(line.cents, receipt.currency)}
+          </label>)}
+          <label className="reason">Review note<textarea value={note} maxLength={500} onChange={e => setNote(e.target.value)} rows={2} /></label>
+          <div className="expense-actions">
+            <button type="button" className="button primary small" disabled={pilot.busy || !note.trim() || !selected.length || receipt.currency !== 'USD'} onClick={() => { void review('approved'); }}>Approve selected</button>
+            <button type="button" className="button small" disabled={pilot.busy || !note.trim()} onClick={() => { void review('returned'); }}>Request changes</button>
+            <button type="button" className="button small danger" disabled={pilot.busy || !note.trim()} onClick={() => { void review('rejected'); }}>Reject</button>
+          </div>
+        </details>}
       </div>
     </div>}
   </div>;

@@ -2,18 +2,18 @@
 
 ## Pilot policy
 
-Each employee has a **€500 calendar-month allowance** for eligible work purchases. The purchase date, interpreted in the tenant's reporting timezone, selects the allowance period. The pilot uses gross EUR item amounts and accepts receipts from any merchant. Merchant identity helps verify a transaction. It does not determine eligibility.
+Each employee has a **$500 USD calendar-month reimbursement limit** for eligible work purchases. The purchase date, interpreted in the tenant's reporting timezone, selects the allowance period. The pilot uses gross USD item amounts and accepts receipts from any merchant. Merchant identity helps verify a transaction. It does not determine eligibility.
 
-For the fictional Harbor Hardware receipt, the €89.90 cordless drill is eligible and the €2.40 chocolate bar is personal. The employee submits €89.90 out of the €92.30 receipt. With €320 previously used or reserved, the available balance moves from €180 to €90.10. The €40–€140 gross unit reference for a cordless drill is illustrative. Production ranges require comparable products, specification, currency, tax basis, geography, date, and an owned source such as contracted prices or procurement history.
+For the fictional Harbor Hardware receipt, the $99.00 cordless drill is eligible and the $1.99 chocolate bar is personal. The employee submits $99.00 out of the $100.99 receipt. With $320 previously used or reserved, the available balance moves from $180 to $81.00. The $70–$140 gross unit reference for a cordless drill is illustrative. Production ranges require comparable products, specification, currency, tax basis, geography, date, and an owned source such as contracted prices or procurement history.
 
 | Check | Rule and resolution |
 | --- | --- |
 | Item extraction | Extract merchant, transaction date, currency, item description, quantity, line gross amount, tax and total when available. Keep source spans and confidence. Detect the distinction between unit and line price. |
 | Work eligibility | Match a tenant-versioned category policy and optional work-order context. The employee attests to work use when confirming. Exclude obvious personal items. Ask about ambiguous categories or missing context. |
-| Price | Compare like-for-like gross unit prices in EUR. Route outliers and missing benchmarks to review. A price outlier does not establish fraud. |
-| Receipt consistency | Reconcile line totals, taxes, discounts and gross total. Retain line-level amounts in minor units. When tax or discounts are present but cannot be allocated reliably, request review. Confirm FX for non-EUR receipts before deciding the allowance. |
+| Price | Compare like-for-like gross unit prices in USD. Route outliers and missing benchmarks to review. A price outlier does not establish fraud. |
+| Receipt consistency | Reconcile line totals, taxes, discounts and gross total. Retain line-level amounts in minor units. When tax or discounts are present but cannot be allocated reliably, request review. Confirm FX for non-USD receipts before deciding the allowance. |
 | Provenance | Verify signed merchant records or signed provenance when available. Check exact file and likely transaction duplicates, mismatches, and any reliable payment or merchant evidence. Preserve the underlying signals and explanations. |
-| Allowance | Compute available amount as €500 minus posted and reserved eligible gross cents. A claim above the available amount goes to review. The pilot never automatically pays a partial claim. |
+| Allowance | Compute available amount as $500 USD minus posted and reserved eligible gross cents. A claim above the available amount goes to review. The pilot never automatically pays a partial claim. |
 
 ## Zero-touch path and exceptions
 
@@ -48,20 +48,12 @@ Use a stable tenant/claim/revision key for writeback. Discover supported IFS pro
 
 ## Acceptance cases
 
-- Mixed basket. Extract the drill and chocolate, reserve €89.90 once, and exclude €2.40.
+- Mixed basket. Extract the drill and chocolate, reserve $99.00 once, and exclude $1.99.
 - Uncertain source. Show explicit metadata as a review signal and keep unmarked photos neutral.
-- Price and allowance. Send a €199.90 drill for review when above the comparable range and €180 remaining. A review draft makes no reservation.
+- Price and allowance. Send a $218.00 drill for review when above the comparable range and $180 remaining. A review draft makes no reservation.
 - Cross-month and concurrent submissions. Apply the purchase month and transactionally reject or route oversubscription. Replays cannot reserve twice.
 - Readability and correction. Test ordinary photos in multiple layouts, currencies and locales. Measure item-level extraction, correction time, straight-through share, false referrals and duplicate leakage. Start in shadow mode before enabling tenant-authorized writeback.
 
 ## Demonstrator boundary
 
-The public site uses browser-local English/French OCR with a simple parser, fictional price references and an in-memory allowance ledger. The receipt image is not uploaded. JPEG, PNG and WebP up to 12 MB are accepted; the metadata check is limited to supported PNG/JPEG fields. Currency conversion, cryptographic verification, live merchant prices, secure evidence storage, manager expense review and IFS posting are production design elements.
-
-## References
-
-- [Azure Document Intelligence receipt extraction](https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/prebuilt/receipt?view=doc-intel-4.0.0)
-- [Document Intelligence data privacy and security](https://learn.microsoft.com/en-us/azure/foundry/responsible-ai/document-intelligence/data-privacy-security)
-- [Multitenancy and Azure Blob Storage](https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/service/blob-storage)
-- [C2PA Content Credentials explainer](https://spec.c2pa.org/specifications/specifications/2.3/explainer/_attachments/Explainer.pdf)
-- [IFS Cloud integration APIs](https://docs.ifs.com/techdocs/26r1/040_tailoring/300_extensibility/010_get_started/)
+The public site runs English/French OCR in the browser and saves claims, original photos, and decisions in IndexedDB on submission. The [Azure pilot template](../../infra/main.bicep) runs one Node.js service with Entra roles and private PostgreSQL. A reviewer verifies employee-supplied data before reserving funds in the private pilot. JPEG, PNG and WebP up to 12 MB are accepted; the explicit metadata check supports PNG and JPEG. FX conversion, cryptographic provenance, Document Intelligence, live price data, payment, and IFS writeback are future integrations. For the illustrative price reference and source links, see the [demo runbook](../../README.md#run-the-live-demo).

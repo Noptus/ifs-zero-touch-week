@@ -4,7 +4,7 @@ import { Activity, ArrowDown, ArrowUpRight, FileText } from 'lucide-react';
 export const base = import.meta.env.BASE_URL;
 export const pdf = `${base}docs/zero-touch-week-architecture.pdf`;
 
-export default function SiteFrame({ current, children }: { current: 'timesheets' | 'expenses'; children: ReactNode }) {
+export default function SiteFrame({ current, children }: { current: 'timesheets' | 'expenses' | 'live'; children: ReactNode }) {
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="site-header">
@@ -13,6 +13,7 @@ export default function SiteFrame({ current, children }: { current: 'timesheets'
         <nav className="site-nav" aria-label="Main navigation">
           <a href={base} aria-current={current === 'timesheets' ? 'page' : undefined}>Timesheets</a>
           <a href={`${base}expenses/`} aria-current={current === 'expenses' ? 'page' : undefined}>Expenses</a>
+        <a href={`${base}live/`} aria-current={current === 'live' ? 'page' : undefined}>Live feed</a>
         </nav>
         <a className="button small header-doc" href={pdf} target="_blank" rel="noreferrer"><FileText size={15} /> Architecture PDF <ArrowUpRight size={14} /></a>
       </div>

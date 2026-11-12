@@ -64,12 +64,30 @@ On a fresh Linux runner use `npx playwright install --with-deps chromium`. The P
 
 ## Scope and limitations
 
-The hosted application is a static React demonstrator. Fictional worker, work-order and camera evidence lives in the browser. State resets on reload. The mock covers same-day editing for a single workweek, with overnight shifts, multi-order reconciliation and offline client sync designed in the technical notes. Manager decisions stay in the demo. No live camera, Azure, Kafka, payroll or IFS connection is provisioned.
-
-The expense workflow runs English/French OCR in the browser, checks line items against a fictional work-purchase policy and €500 monthly allowance, and demonstrates exception routing. Receipts stay in browser memory. AI-source metadata is an unverified review signal. The demo has no live price feed or reimbursement integration.
+The hosted GitHub Pages showcase has working browser-local receipt OCR, claim review, and saved timesheet approval with CSV export. The [live feed page](https://noptus.github.io/ifs-zero-touch-week/live/) shows the public camera; model inference runs on the configurable pilot server. Neither edition pays claims or writes to IFS. The architecture brief separates the working pilot from the planned enterprise integrations.
 
 Capacity presets are illustrative assumptions in USD. They are editable and contain no measured throughput, production customer footprint, region-specific quota or Azure price quote.
 
 The pilot counts a comparable worker-day as within target when the absolute difference between pre-edit draft and approved reportable minutes is 30 minutes or less. Compare under the same tenant rules and site-local reporting day. Track interval-boundary error and missing draft/reference coverage separately.
 
 This project is independent of IFS. No employee information, credentials, real footage or model weights are included.
+
+## Run the live demo
+
+Requires Node 22 and a vision model. [Ollama Qwen2.5-VL 3B](https://ollama.com/library/qwen2.5vl) runs locally without an API key; the download is about 3.2 GB. Start Ollama first if it is not running.
+
+```sh
+npm ci
+ollama pull qwen2.5vl:3b
+npm run build:pilot
+PILOT_AUTH=local PILOT_SEED_DEMO=1 VISION_BASE_URL=http://127.0.0.1:11434/v1 \
+  VISION_MODEL=qwen2.5vl:3b npm run pilot
+```
+
+Open [the local pilot](http://127.0.0.1:8788/ifs-zero-touch-week/) and select **Live feed → Start analysis**. The [USGS Kīlauea still feed](https://www.usgs.gov/volcanoes/kilauea/kwcam-live-panorama-halemaumau-west-rim-kilauea-summit-caldera-looking-southeast) is fetched on its own schedule; repeat frames reuse the observation. **My webcam** samples at a target of five seconds, waiting for the last request to finish. Stop closes the camera and stops new requests. You can replace the two vision settings with a LiteLLM OpenAI-compatible proxy and set `VISION_API_KEY` on the server. The model observations are advisory and never enter payroll. The pilot stores no video; provider retention is separately configured.
+
+To try an expense, open **Expenses → Choose image** or use **Take photo** on a phone. Confirm extracted fields, submit, then reopen the saved claim to review an exception. The $500 USD figure is an eligible reimbursement limit per employee per calendar month. The seed is fictional. US retail benchmarks for the example are [Ryobi drill kit, $98.97](https://www.homedepot.com/p/345174555), [Craftsman drill kit, $99.00](https://www.lowes.com/pd/CRAFTSMAN-20-volt-Max-1-2-in-Keyless-Cordless-Drill-1-Batteries-Included-and-Charger-Included/5018700285) and [chocolate bar, $1.99](https://www.target.com/p/-/A-13347750). Actual prices vary; the demo does not query retailers. A provenance marker is only a review signal; its absence says nothing about authenticity.
+
+The local service is loopback-only, uses SQLite by default and lets the demonstrator play both roles. Omit `PILOT_SEED_DEMO=1` to start without the fictional balance and sample receipt buttons. Use `PILOT_DB` to choose a separate file. The public GitHub Pages edition stores submitted photos and workflow state in this browser’s IndexedDB; clearing site data removes them. The private pilot persists state and evidence in PostgreSQL and checks separate employee/reviewer identities. See the [Azure pilot runbook](infra/README.md).
+
+The product backlog tracks [IFS timesheet reconciliation](https://github.com/Noptus/ifs-zero-touch-week/issues/1), [verified receipt processing](https://github.com/Noptus/ifs-zero-touch-week/issues/2), and [a worksite vision evaluation](https://github.com/Noptus/ifs-zero-touch-week/issues/3).

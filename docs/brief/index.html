@@ -194,16 +194,16 @@ cloud workers = ceil(frames/day /
 <section class="page">
   <p class="kicker">Expenses · Azure reference architecture</p>
   <h2>From receipt photo to claim.</h2>
-  <p class="lead">Employees buy from any shop and confirm a clean draft in one step. The monthly allowance is €500 per employee for eligible work items.</p>
+  <p class="lead">Employees buy from any shop and confirm a clean draft in one step. The $500 USD monthly limit caps eligible reimbursement per employee. Actual spend depends on approved claims.</p>
   <figure class="diagram expense-diagram">
     <img src="../../public/docs/expense-azure-architecture.svg" alt="Azure expense architecture. Capture, Document Intelligence extraction, Go policy and PostgreSQL allowance, then writeback or exception review.">
   </figure>
   <div class="columns">
-    <article class="card"><h3>Mixed receipt</h3><p>A €89.90 cordless drill is within the example €40–€140 unit range. The €2.40 chocolate bar is excluded. With €320 used or reserved, the clean claim reserves €89.90 and leaves €90.10.</p></article>
+    <article class="card"><h3>Mixed receipt</h3><p>A $99.00 cordless drill is within the example $70–$140 unit range. The $1.99 chocolate bar is excluded. With $320 used or reserved, the clean claim reserves $99.00 and leaves $81.00.</p></article>
     <article class="card"><h3>Provenance and price</h3><p>Inspect explicit AI-source markers, duplicates and independent transaction evidence. A marker or price outlier prompts review. Missing metadata leaves origin unknown.</p></article>
   </div>
-  <h3>Allowance and writeback</h3>
-  <p>Lock the employee-month ledger, check the €500 cap, and create the reservation and writeback command in one transaction. Route over-cap claims, low OCR confidence and material corrections for review. Record the IFS acknowledgment before finalizing the reservation.</p>
+  <h3>Working pilot and production handoff</h3>
+  <p>The demo saves receipt submissions and timesheet decisions. The Azure Bicep pilot uses Entra ID, Node.js and private PostgreSQL; an optional vision endpoint samples a live feed every five seconds when ready. The production design adds an outbox and IFS acknowledgment before finalizing reservations.</p>
   <p>Proposed pilot gates are 70% of in-scope claims with one confirmation and no corrections or extra evidence requests, and 30% less median active employee time. <a href="https://github.com/Noptus/ifs-zero-touch-week/blob/main/docs/product/expense-requirements.md">Expense requirements and acceptance checks</a></p>
   <footer class="footer">Zero-Touch Week · Expenses</footer>
 </section>
