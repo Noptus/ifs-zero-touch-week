@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import { ArrowRight, CalendarDays, Check, ChevronRight, CircleAlert, Clock3, Fingerprint, ScanLine, ShieldCheck } from 'lucide-react';
-import { activities, clock, dates, days, duration, makeWeek, minutes, projects, sumMinutes, validate } from './workflow';
-import type { Activity, Interval, Project } from './workflow';
+import WorkerConfirmation from './WorkerConfirmation';
+import { clock, duration, makeWeek, reportableMinutes, validate } from './workflow';
+import type { Interval } from './workflow';
 
 type Stage = 'journey' | 'worker' | 'manager';
 type Status = 'Draft' | 'Pending review' | 'Changes requested' | 'Rejected' | 'Approved locally';
@@ -27,7 +28,7 @@ export default function WorkflowDemo() {
   const row = mondayRows[selected];
   const editable = status === 'Draft' || status === 'Changes requested' || status === 'Rejected';
   const errors = validate(rows);
-  const weeklyMinutes = sumMinutes(rows.filter(entry => entry.activity !== 'Gap' && entry.activity !== 'Break'));
+  const weeklyMinutes = reportableMinutes(rows);
   const open = rows.filter(entry => !entry.confirmed).length;
   const overtime = weeklyMinutes > 2400;
   const flags = rows.filter(entry => entry.edited && entry.project !== initialWeek.find(original => original.id === entry.id)?.project);
@@ -96,29 +97,17 @@ export default function WorkflowDemo() {
         </div>
       </div>
     </div>}
-    {stage === 'worker' && <div className="demo-body">
-      <div className="demo-toolbar">
-        <div className="worker"><span className="avatar">AM</span><div><strong>Ari’s proposed week</strong><small>9–13 November 2026 · {duration(weeklyMinutes)} excluding breaks and unresolved gaps</small></div></div>
-        <span className={`tag ${open ? 'warning' : 'green'}`}>{open ? `${open} unresolved` : status}</span>
-      </div>
-      {decision && <p className="inline-note"><CircleAlert size={16} /> Manager note: {decision}</p>}
-      <nav className="day-tabs" aria-label="Week days">{days.map((label, i) => <button key={label} aria-pressed={day === i} onClick={() => setDay(i)}>{label}<small>{dates[i]}</small></button>)}</nav>
-      <div className="summary-pills" aria-label="Weekly activity and project totals">
-        {activities.map(activity => <span className="tag" key={activity}>{activity} · {duration(sumMinutes(rows.filter(entry => entry.activity === activity)))}</span>)}
-        {projects.map(project => <span className="tag" key={project}>{project} · {duration(sumMinutes(rows.filter(entry => entry.project === project && entry.activity !== 'Gap' && entry.activity !== 'Break')))}</span>)}
-      </div>
-      <div className="timesheet">
-        {rows.filter(entry => entry.day === day).map(entry => <div key={entry.id} className={`sheet-row ${!entry.confirmed ? 'flagged' : ''}`}>
-          <label>Start<input aria-label={`Start for ${entry.id}`} type="time" disabled={!editable} value={clock(entry.start)} onChange={e => update(entry.id, { start: minutes(e.target.value) })} /></label>
-          <label>End<input aria-label={`End for ${entry.id}`} type="time" disabled={!editable} value={clock(entry.end)} onChange={e => update(entry.id, { end: minutes(e.target.value) })} /></label>
-          <label>Activity<select aria-label={`Activity for ${entry.id}`} disabled={!editable} value={entry.activity} onChange={e => update(entry.id, { activity: e.target.value as Activity })}>{entry.activity === 'Gap' && <option value="Gap">Unclassified</option>}{activities.map(activity => <option key={activity}>{activity}</option>)}</select></label>
-          <label>Project<select aria-label={`Project for ${entry.id}`} disabled={!editable} value={entry.project} onChange={e => { const project = e.target.value as Project; update(entry.id, { project, order: project === projects[0] ? 'WO-4821' : 'WO-4917' }); }}>{projects.map(project => <option key={project}>{project}</option>)}</select></label>
-          <div className="sheet-state">{!entry.confirmed ? <button className="button small" disabled={!editable || entry.activity === 'Gap'} onClick={() => update(entry.id, { confirmed: true })}>Confirm gap</button> : <span><Check size={14} /> {entry.edited ? 'Edited' : 'Proposed'}</span>}</div>
-        </div>)}
-      </div>
-      {attempt && editable && errors.length > 0 && <div className="inline-note" role="alert"><CircleAlert size={16} /> {errors.join(' ')}</div>}
-      <div className="panel-actions"><small>{editable ? 'Resolve Monday’s 12:15–12:45 pause from personal knowledge. Edits stay in this demo.' : 'This revision is locked while pending or approved.'}</small><button className="button primary" disabled={!editable} onClick={submit}>Submit draft <ArrowRight size={16} /></button></div>
-    </div>}
+    {stage === 'worker' && <WorkerConfirmation
+      rows={rows}
+      day={day}
+      status={status}
+      editable={editable}
+      managerNote={decision}
+      errors={attempt ? errors : []}
+      onSelectDay={setDay}
+      onEdit={update}
+      onSubmit={submit}
+    />}
     {stage === 'manager' && <div className="demo-body manager-grid">
       <div className="inbox">
         <div className="micro"><ShieldCheck size={15} /> APPROVAL QUEUE</div>

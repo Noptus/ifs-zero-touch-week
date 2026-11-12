@@ -8,41 +8,58 @@ test('pilot accuracy target defines the pre-edit daily comparison', async ({ pag
   await expect(target).toContainText('25 minutes of error');
 });
 
-test('worker correction moves through manager exceptions and approval', async ({ page }) => {
-  await page.goto('./');
-  await page.getByRole('link', { name: 'Explore the demo' }).click();
-  await page.getByRole('switch', { name: /camera evidence/i }).click();
-  await page.getByRole('button', { name: /waiting for site clearance/i }).click();
-  await expect(page.getByText(/anonymous inbound crossing/)).toBeVisible();
-  await page.getByRole('button', { name: 'Review the proposed week' }).click();
-  await expect(page.getByRole('button', { name: /confirm timesheet/i })).toBeFocused();
-  await page.getByLabel('End for 0-e1').fill('08:50');
-  await page.getByRole('button', { name: 'Submit draft' }).click();
-  await expect(page.getByRole('alert')).toContainText('unresolved Monday');
-  await expect(page.getByRole('alert')).toContainText('Mon contains overlapping intervals.');
-  await page.getByLabel('End for 0-e1').fill('08:45');
-  await page.getByLabel('Activity for 0-e4').selectOption('Break');
-  await page.getByLabel('Project for 0-e4').selectOption('Northline Retrofit');
-  await page.getByRole('button', { name: 'Confirm gap' }).click();
-  await page.getByRole('button', { name: 'Submit draft' }).click();
-  await expect(page.getByText(/exceeds this demo/)).toBeVisible();
-  await expect(page.getByText(/differs from the source work order/)).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
+test.describe('Mobile worker confirmation', () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 
-  await page.getByRole('textbox', { name: /manager note/i }).fill('Confirm project with dispatch.');
-  await page.getByRole('button', { name: 'Request changes' }).click();
-  await expect(page.getByRole('status')).toContainText('Confirm project with dispatch.');
-  await page.getByRole('button', { name: 'Open worker view' }).click();
-  await page.getByLabel('Project for 0-e4').selectOption('Harbor Works');
-  await page.getByRole('button', { name: 'Submit draft' }).click();
-  await page.getByLabel('I reviewed the flagged exceptions.').check();
-  await page.getByRole('button', { name: 'Approve', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('Approved in the demo');
-  await page.getByRole('button', { name: /Mika Chen/ }).click();
-  await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
-  await page.getByRole('textbox', { name: /manager note/i }).fill('Missing end-of-shift evidence.');
-  await page.getByRole('button', { name: 'Reject', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('Missing end-of-shift evidence.');
+  test('worker correction moves through manager exceptions and approval', async ({ page }) => {
+    await page.goto('./');
+    await page.getByRole('link', { name: 'Explore the demo' }).click();
+    await page.getByRole('switch', { name: /camera evidence/i }).click();
+    await page.getByRole('button', { name: /waiting for site clearance/i }).click();
+    await expect(page.getByText(/anonymous inbound crossing/)).toBeVisible();
+    await page.getByRole('button', { name: 'Review the proposed week' }).click();
+    await expect(page.getByRole('button', { name: /confirm timesheet/i })).toBeFocused();
+    const phone = page.getByRole('region', { name: 'Worker timesheet' });
+    await expect(phone.getByText('40h 30m')).toBeVisible();
+    await phone.getByRole('button', { name: 'Tue 10 Nov' }).tap();
+    await expect(phone.getByRole('heading', { name: 'Tue · 10 Nov' })).toBeVisible();
+    await phone.getByRole('button', { name: 'Mon 09 Nov' }).tap();
+    const firstInterval = phone.getByRole('button', { name: /travel 08:00–08:45/i });
+    await firstInterval.tap();
+    await expect(firstInterval).toHaveAttribute('aria-expanded', 'true');
+    await page.getByLabel('End for 0-e1').fill('08:50');
+    await page.getByRole('button', { name: 'Submit draft' }).click();
+    await expect(page.getByRole('alert')).toContainText('unresolved Monday');
+    await expect(page.getByRole('alert')).toContainText('Mon contains overlapping intervals.');
+    await page.getByLabel('End for 0-e1').fill('08:45');
+    await phone.getByRole('button', { name: 'Done', exact: true }).tap();
+    await expect(firstInterval).toHaveAttribute('aria-expanded', 'false');
+    await phone.getByRole('button', { name: /unclassified gap/iu }).tap();
+    await page.getByLabel('Activity for 0-e4').selectOption('Break');
+    await page.getByLabel('Project for 0-e4').selectOption('Northline Retrofit');
+    await page.getByRole('button', { name: 'Confirm gap' }).click();
+    await page.getByRole('button', { name: 'Submit draft' }).click();
+    await expect(page.getByText(/exceeds this demo/)).toBeVisible();
+    await expect(page.getByText(/differs from the source work order/)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
+
+    await page.getByRole('textbox', { name: /manager note/i }).fill('Confirm project with dispatch.');
+    await page.getByRole('button', { name: 'Request changes' }).click();
+    await expect(page.getByRole('status')).toContainText('Confirm project with dispatch.');
+    await page.getByRole('button', { name: 'Open worker view' }).click();
+    await expect(phone.getByText('Manager note: Confirm project with dispatch.')).toBeVisible();
+    await phone.getByRole('button', { name: /break 12:15–12:45/i }).tap();
+    await page.getByLabel('Project for 0-e4').selectOption('Harbor Works');
+    await page.getByRole('button', { name: 'Submit draft' }).click();
+    await page.getByLabel('I reviewed the flagged exceptions.').check();
+    await page.getByRole('button', { name: 'Approve', exact: true }).click();
+    await expect(page.getByRole('status')).toContainText('Approved in the demo');
+    await page.getByRole('button', { name: /Mika Chen/ }).click();
+    await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
+    await page.getByRole('textbox', { name: /manager note/i }).fill('Missing end-of-shift evidence.');
+    await page.getByRole('button', { name: 'Reject', exact: true }).click();
+    await expect(page.getByRole('status')).toContainText('Missing end-of-shift evidence.');
+  });
 });
 
 test('calculator and technical diagrams respond to changes', async ({ page }) => {
@@ -105,6 +122,13 @@ for (const width of [320, 390, 768, 1440]) {
     await expect.poll(() => page.locator('.brief-preview img').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
     await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
     await page.screenshot({ fullPage: true, path: testInfo.outputPath('showcase.png'), animations: 'disabled' });
+    await page.getByRole('button', { name: 'Confirm timesheet' }).click();
+    const phone = page.getByRole('region', { name: 'Worker timesheet' });
+    await expect(phone).toBeVisible();
+    const bounds = await phone.boundingBox();
+    expect(bounds?.width).toBeLessThanOrEqual(Math.min(405, width));
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    await phone.screenshot({ path: testInfo.outputPath('worker-confirmation.png'), animations: 'disabled' });
     expect(errors).toEqual([]);
   });
 }

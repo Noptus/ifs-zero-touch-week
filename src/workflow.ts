@@ -97,6 +97,10 @@ export function sumMinutes(intervals: Interval[]) {
   return intervals.reduce((sum, row) => sum + Math.max(0, (row.end - row.start) || 0), 0);
 }
 
+export function reportableMinutes(intervals: Interval[]) {
+  return sumMinutes(intervals.filter(row => row.confirmed && row.activity !== 'Gap' && row.activity !== 'Break'));
+}
+
 export function validate(intervals: Interval[]) {
   const errors = new Set<string>();
   for (const row of intervals) {
