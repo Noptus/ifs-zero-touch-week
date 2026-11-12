@@ -31,7 +31,7 @@ jobs:
             sudo apt-get install -y poppler-utils
           fi
           npm run pdf
-          pdfinfo public/docs/zero-touch-week-architecture.pdf | awk '/^Pages:/ { pages = $2 } END { exit pages != 10 }'
+          pdfinfo public/docs/zero-touch-week-architecture.pdf | awk '/^Pages:/ { pages = $2 } END { exit pages != 11 }'
       - run: npm run build
       - run: npm run test:browser
       - uses: actions/upload-pages-artifact@v5.0.0

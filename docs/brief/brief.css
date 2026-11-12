@@ -17,7 +17,7 @@ li + li { margin-top: 1mm; }
 .kicker { font: 650 8.5pt/1.4 Inter, sans-serif; text-transform: uppercase; letter-spacing: .17em; color: #66359a; }
 .lead { color: #5f5466; font-size: 11.5pt; max-width: 160mm; margin-bottom: 5mm; }
 .footer { position: absolute; left: 17mm; right: 17mm; bottom: 10mm; display: flex; justify-content: space-between; border-top: .3mm solid #d1c7d6; color: #615568; padding-top: 2.7mm; font-size: 8pt; }
-.footer::after { content: counter(page-number, decimal-leading-zero) " / 10"; font-weight: 650; }
+.footer::after { content: counter(page-number, decimal-leading-zero) " / 11"; font-weight: 650; }
 .cover { color: #f3eef4; background: #110e15; }
 .cover .kicker, .cover em { color: #73e7b0; }
 .cover h1 { font-size: 68pt; font-weight: 400; line-height: .89; margin: 14mm 0 6mm; }
@@ -49,3 +49,6 @@ pre { margin: 3mm 0; padding: 3mm; background: #221b29; color: #f2edf4; border-r
 @media screen { body { background: #eee8f1; } .page { margin-inline: auto; } }
 
 .pilot-table td:first-child { min-width: 16mm; white-space: nowrap; }
+
+.expense-diagram { padding: 0; overflow: hidden; }
+.expense-diagram img { width: 100%; display: block; }

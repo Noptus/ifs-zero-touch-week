@@ -68,6 +68,7 @@ test('calculator and technical diagrams respond to changes', async ({ page }) =>
   await expect(page.getByText('ONE SITE · SHADOW MODE')).toBeVisible();
   await page.getByRole('button', { name: /validate policy/i }).click();
   await expect(page.getByText('Unknown or stale policy', { exact: false })).toBeVisible();
+  await page.getByText('Capacity planner', { exact: true }).click();
   await page.getByRole('button', { name: 'Camera-free', exact: true }).click();
   await expect(page.getByText('0 GB', { exact: true }).first()).toBeVisible();
   await page.getByRole('button', { name: 'Pilot', exact: true }).click();
@@ -79,13 +80,14 @@ test('calculator and technical diagrams respond to changes', async ({ page }) =>
   await expect(page.getByText('Startup consumes the full cloud window.')).toBeVisible();
   await page.getByText('Equations, units & exclusions').click();
   await expect(page.getByText('edge workers/site', { exact: false })).toBeVisible();
+  await page.getByText('30-day pilot', { exact: true }).click();
   await page.getByRole('button', { name: /Days 22–30/ }).click();
   await expect(page.getByText('zero observed harmful approvals', { exact: false })).toBeVisible();
 });
 
 test('architecture brief opens and downloads as a PDF', async ({ page, request }) => {
   await page.goto('./');
-  const link = page.getByRole('link', { name: 'View PDF', exact: true });
+  const link = page.getByRole('link', { name: 'Architecture PDF', exact: true });
   const path = await link.getAttribute('href');
   expect(path).toBeTruthy();
   const response = await request.get(path!);
@@ -110,16 +112,9 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
     await page.evaluate(() => document.fonts.ready.then(() => undefined));
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    if (width < 640) {
-      await page.getByRole('button', { name: 'Sections' }).focus();
-      await page.keyboard.press('Enter');
-      await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible();
-      await page.getByRole('navigation', { name: 'Main navigation' }).getByText('Architecture').click();
-      await expect(page.getByRole('button', { name: 'Sections' })).toHaveAttribute('aria-expanded', 'false');
-      await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
-    }
-    await page.locator('.brief-preview img').scrollIntoViewIfNeeded();
-    await expect.poll(() => page.locator('.brief-preview img').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+    const nav = page.getByRole('navigation', { name: 'Main navigation' });
+    await expect(nav.getByRole('link', { name: 'Timesheets' })).toHaveAttribute('aria-current', 'page');
+    await expect(nav.getByRole('link', { name: 'Expenses' })).toBeVisible();
     await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
     await page.screenshot({ fullPage: true, path: testInfo.outputPath('showcase.png'), animations: 'disabled' });
     await page.getByRole('button', { name: 'Confirm timesheet' }).click();

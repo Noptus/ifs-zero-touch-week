@@ -23,9 +23,10 @@ try {
       return [];
     });
     const fonts = [...document.fonts].map(font => font.status);
-    return { overflow, count: pages.length, fonts };
+    const missingImages = [...document.images].filter(image => !image.complete || image.naturalWidth === 0).length;
+    return { overflow, count: pages.length, fonts, missingImages };
   });
-  if (result.count !== 10 || result.overflow.length || result.fonts.some(status => status !== 'loaded')) {
+  if (result.count !== 11 || result.missingImages || result.overflow.length || result.fonts.some(status => status !== 'loaded')) {
     throw new Error(`Brief layout check failed: ${JSON.stringify(result)}`);
   }
 
@@ -37,7 +38,7 @@ try {
   });
   await page.emulateMedia({ media: 'screen' });
   await page.locator('.cover').screenshot({ path: fileURLToPath(new URL('brief-preview.png', outputDir)) });
-  console.log('Generated the ten-page architecture brief and cover preview.');
+  console.log('Generated the eleven-page architecture brief and cover preview.');
 } finally {
   await browser.close();
 }

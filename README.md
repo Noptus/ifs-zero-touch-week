@@ -2,9 +2,10 @@
 
 **From operational signals to accurate timesheets — without the paperwork.**
 
-An independent architecture showcase for an IFS technical interview. Follow a fictional technician’s day, correct a week’s entries, and approve the draft in an exception-driven manager inbox.
+An independent architecture showcase for an IFS technical interview. Explore two field-service workflows: evidence-backed timesheets and receipt-to-claim expenses.
 
-- [Live showcase](https://noptus.github.io/ifs-zero-touch-week/)
+- [Timesheets](https://noptus.github.io/ifs-zero-touch-week/)
+- [Expenses](https://noptus.github.io/ifs-zero-touch-week/expenses/)
 - [Architecture brief (PDF)](https://noptus.github.io/ifs-zero-touch-week/docs/zero-touch-week-architecture.pdf)
 - [GitHub Pages workflow](.github/workflows/pages.yml)
 
@@ -29,7 +30,7 @@ npm run build
 npm run test:browser
 ```
 
-On a fresh Linux runner use `npx playwright install --with-deps chromium`. The PDF is generated from [HTML and print CSS](docs/brief/) and copied from `public/docs/` into the production site. Actions regenerates it and checks the ten-page count before deployment. Chromium PDF metadata can vary by build.
+On a fresh Linux runner use `npx playwright install --with-deps chromium`. The PDF is generated from [HTML and print CSS](docs/brief/) and copied from `public/docs/` into the production site. Actions regenerates it and checks the eleven-page count before deployment. Chromium PDF metadata can vary by build.
 
 ## Design
 
@@ -45,6 +46,7 @@ On a fresh Linux runner use `npx playwright install --with-deps chromium`. The P
 | Component boundaries, reconstruction and IFS integration | [Architecture](docs/technical/architecture.md) |
 | Design alternatives and trade-offs | [Decision records](docs/technical/architecture-decisions.md) |
 | Equations, throughput and benchmarking | [Capacity planning](docs/technical/capacity-planning.md) |
+| Receipt OCR, allowance ledger and IFS expense writeback | [Expense specification](docs/technical/expense-processing.md) |
 | Event schema and processing semantics | [Event contracts](docs/technical/event-contracts.md) |
 | Privacy, tenant isolation and audit | [Security and privacy](docs/technical/security-and-privacy.md) |
 | Milestones, metrics and gates | [30-day pilot](docs/technical/pilot-plan.md) |
@@ -54,6 +56,8 @@ On a fresh Linux runner use `npx playwright install --with-deps chromium`. The P
 ## Scope and limitations
 
 The hosted application is a static React demonstrator. Fictional worker, work-order and camera evidence lives in the browser. State resets on reload. The mock covers same-day editing for a single workweek, with overnight shifts, multi-order reconciliation and offline client sync designed in the technical notes. Manager decisions stay in the demo. No live camera, Azure, Kafka, payroll or IFS connection is provisioned.
+
+The expense workflow runs English/French OCR in the browser, checks line items against a fictional work-purchase policy and €500 monthly allowance, and demonstrates exception routing. Receipts stay in browser memory. AI-source metadata is an unverified review signal. The demo has no live price feed or reimbursement integration.
 
 Capacity presets are illustrative assumptions in USD. They are editable and contain no measured throughput, production customer footprint, region-specific quota or Azure price quote.
 

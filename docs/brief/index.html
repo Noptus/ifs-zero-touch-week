@@ -5,20 +5,20 @@
 <section class="page cover">
   <p class="kicker">Independent architecture proposal · 2026</p>
   <h1>Zero-Touch<br><em>Week.</em></h1>
-  <p class="subtitle">From operational signals to accurate timesheets.</p>
-  <p class="lead">An edge-first design for IFS Cloud field teams. Reconstruct a draft from operational evidence, surface uncertainty and give people control over what gets posted.</p>
+  <p class="subtitle">Timesheets and expenses from existing evidence.</p>
+  <p class="lead">Two workflows for IFS Cloud field teams. Use work signals to draft time and receipt photos to draft expenses. Ask people to confirm drafts and resolve exceptions.</p>
   <svg viewBox="0 0 680 302" role="img" aria-label="Evidence flows from site signals through reconstruction and human review before IFS Cloud posting">
     <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#392e40" stroke-width="1"/></pattern><marker id="cover-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0l6 3-6 3" fill="none" stroke="#73e7b0"/></marker></defs>
     <rect x=".5" y=".5" width="679" height="301" rx="12" fill="url(#grid)" stroke="#594962"/>
     <g fill="none" stroke="#73e7b0" stroke-width="2" marker-end="url(#cover-arrow)"><path d="M158 144h40"/><path d="M323 144h40"/><path d="M488 144h40"/></g>
     <g stroke="#73e7b0" fill="#211a28"><rect x="35" y="93" width="123" height="102" rx="8"/><rect x="200" y="93" width="123" height="102" rx="8"/><rect x="365" y="93" width="123" height="102" rx="8"/><rect x="530" y="93" width="116" height="102" rx="8"/></g>
     <g fill="none" stroke="#73e7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M75 131h11l6-11 7 21 7-10h12"/><path d="M246 121h30m-30 10h23m-23 10h16"/><path d="M412 131l9 8 19-20"/><path d="M578 140v-16l10-5 10 5v16h-20m7-8h6"/></g>
-    <g fill="#f2edf3" font-family="Inter, sans-serif" font-size="13" text-anchor="middle" font-weight="650"><text x="96" y="166">Site signals</text><text x="261" y="166">Reconstruct</text><text x="426" y="166">Human review</text><text x="588" y="166">IFS Cloud</text></g>
-    <g fill="#c9becf" font-family="Inter, sans-serif" font-size="11" text-anchor="middle"><text x="96" y="181">Optional vision</text><text x="261" y="181">Rules + provenance</text><text x="426" y="181">Worker → manager</text><text x="588" y="181">ERP receipt</text></g>
+    <g fill="#f2edf3" font-family="Inter, sans-serif" font-size="13" text-anchor="middle" font-weight="650"><text x="96" y="166">Capture</text><text x="261" y="166">Draft</text><text x="426" y="166">Confirm / review</text><text x="588" y="166">IFS Cloud</text></g>
+    <g fill="#c9becf" font-family="Inter, sans-serif" font-size="11" text-anchor="middle"><text x="96" y="181">Signals + receipts</text><text x="261" y="181">Rules + evidence</text><text x="426" y="181">One tap or exception</text><text x="588" y="181">ERP receipt</text></g>
     <text x="35" y="45" fill="#86e6b7" font-size="12" font-family="monospace">EVIDENCE → DRAFT → APPROVAL → POSTING</text>
-    <text x="35" y="260" fill="#c9becf" font-size="12" font-family="monospace">CAMERA-FREE BASELINE / ONE SITE / 30 DAYS</text>
+    <text x="35" y="260" fill="#c9becf" font-size="12" font-family="monospace">TIMESHEETS + EXPENSES / ONE-SITE PILOT</text>
   </svg>
-  <div class="cover-links"><span>Technical architecture brief · v1.0</span><a href="https://noptus.github.io/ifs-zero-touch-week/">Open the interactive showcase</a></div>
+  <div class="cover-links"><span>Technical architecture brief · v1.1</span><a href="https://noptus.github.io/ifs-zero-touch-week/">Open the interactive showcase</a></div>
   <footer class="footer">Zero-Touch Week · Technical architecture brief</footer>
 </section>
 
@@ -40,7 +40,7 @@
   <p>An assigned six-hour order and seven hours of site presence support a possible allocation. Work completion comes from a validated status event, operational record or human confirmation. Camera observations represent crossings of people in a zone. Named identity requires a separately authorized check-in or badge source.</p>
   <div class="callout"><p><strong>Product principle.</strong> Automate data capture, not accountability. Missing evidence stays visible. A policy engine flags possible breaks or overtime and leaves any correction to an authorized person.</p></div>
   <h3>First scope</h3>
-  <p>Time entry for one worksite. Expense reimbursement remains a later IFS workflow that would use receipts and worker attestations. The system does not invent hours, mileage, breaks, overtime or completion from incomplete evidence.</p>
+  <p>Pilot timesheets at one worksite and test expense processing against a separate receipt corpus and allowance ledger. Timesheets use operational signals and worker corrections. Expenses use extracted line items, policy checks and a worker attestation.</p>
   <footer class="footer">Zero-Touch Week · Business context</footer>
 </section>
 
@@ -192,6 +192,23 @@ cloud workers = ceil(frames/day /
 </section>
 
 <section class="page">
+  <p class="kicker">Expenses · Azure reference architecture</p>
+  <h2>From receipt photo to claim.</h2>
+  <p class="lead">Employees buy from any shop and confirm a clean draft in one step. The monthly allowance is €500 per employee for eligible work items.</p>
+  <figure class="diagram expense-diagram">
+    <img src="../../public/docs/expense-azure-architecture.svg" alt="Azure expense architecture. Capture, Document Intelligence extraction, Go policy and PostgreSQL allowance, then writeback or exception review.">
+  </figure>
+  <div class="columns">
+    <article class="card"><h3>Mixed receipt</h3><p>A €89.90 cordless drill is within the example €40–€140 unit range. The €2.40 chocolate bar is excluded. With €320 used or reserved, the clean claim reserves €89.90 and leaves €90.10.</p></article>
+    <article class="card"><h3>Provenance and price</h3><p>Inspect explicit AI-source markers, duplicates and independent transaction evidence. A marker or price outlier prompts review. Missing metadata leaves origin unknown.</p></article>
+  </div>
+  <h3>Allowance and writeback</h3>
+  <p>Lock the employee-month ledger, check the €500 cap, and create the reservation and writeback command in one transaction. Route over-cap claims, low OCR confidence and material corrections for review. Record the IFS acknowledgment before finalizing the reservation.</p>
+  <p>In shadow mode, measure extraction accuracy, staff corrections, straight-through share and false referrals. <a href="https://github.com/Noptus/ifs-zero-touch-week/blob/main/docs/technical/expense-processing.md">Expense technical specification</a></p>
+  <footer class="footer">Zero-Touch Week · Expenses</footer>
+</section>
+
+<section class="page">
   <p class="kicker">Risks and next steps</p>
   <h2>Review the unresolved decisions.</h2>
   <p class="lead">Progress through gated releases. Document the observed errors and cost before committing to a regional fleet.</p>
@@ -215,6 +232,8 @@ cloud workers = ceil(frames/day /
     <li><a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj">EUR-Lex · GDPR Articles 5, 6 and 35</a></li>
     <li><a href="https://www.cnil.fr/fr/la-videosurveillance-videoprotection-au-travail">CNIL · Workplace video monitoring</a></li>
     <li><a href="https://www.ultralytics.com/license">Ultralytics · AGPL and Enterprise licensing</a></li>
+    <li><a href="https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/prebuilt/receipt?view=doc-intel-4.0.0">Microsoft · Receipt extraction</a></li>
+    <li><a href="https://spec.c2pa.org/specifications/specifications/2.3/explainer/_attachments/Explainer.pdf">C2PA · Content Credentials</a></li>
     <li><a href="https://github.com/Noptus/ifs-zero-touch-week">Zero-Touch Week · Source and technical notes</a></li>
   </ul>
   <footer class="footer">Zero-Touch Week · Risks, next steps and references</footer>
