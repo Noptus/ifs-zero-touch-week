@@ -1,5 +1,13 @@
 import { test, expect } from '@playwright/test';
 
+test('pilot accuracy target defines the pre-edit daily comparison', async ({ page }) => {
+  await page.goto('./');
+  const target = page.getByRole('complementary', { name: 'Pilot accuracy target' });
+  await expect(target).toContainText('≤30 minutes');
+  await expect(target).toContainText('approved total for the same worker and day');
+  await expect(target).toContainText('25 minutes of error');
+});
+
 test('worker correction moves through manager exceptions and approval', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('link', { name: 'Explore the demo' }).click();

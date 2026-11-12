@@ -70,7 +70,7 @@ export default function WorkflowDemo() {
 
   return <div className="app-panel">
     <nav ref={stageNav} className="stage-nav" aria-label="Demo steps">
-      {(Object.keys(stageNames) as Stage[]).map((key, index) => <button key={key} type="button" data-stage={key} aria-pressed={stage === key} onClick={() => setStage(key)}><span>0{index + 1}</span> {stageNames[key]}</button>)}
+      {(Object.keys(stageNames) as Stage[]).map(key => <button key={key} type="button" data-stage={key} aria-pressed={stage === key} onClick={() => setStage(key)}>{stageNames[key]}</button>)}
     </nav>
     {stage === 'journey' && <div className="demo-body">
       <div className="demo-toolbar">

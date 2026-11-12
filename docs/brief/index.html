@@ -8,15 +8,15 @@
   <p class="subtitle">From operational signals to accurate timesheets.</p>
   <p class="lead">An edge-first design for IFS Cloud field teams. Reconstruct a draft from operational evidence, surface uncertainty and give people control over what gets posted.</p>
   <svg viewBox="0 0 680 302" role="img" aria-label="Evidence flows from site signals through reconstruction and human review before IFS Cloud posting">
-    <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#294958" stroke-width="1"/></pattern><marker id="cover-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0l6 3-6 3" fill="none" stroke="#72e3ce"/></marker></defs>
-    <rect x=".5" y=".5" width="679" height="301" rx="12" fill="url(#grid)" stroke="#4a6975"/>
-    <g fill="none" stroke="#72e3ce" stroke-width="2" marker-end="url(#cover-arrow)"><path d="M158 144h40"/><path d="M323 144h40"/><path d="M488 144h40"/></g>
-    <g stroke="#72e3ce" fill="#102d37"><rect x="35" y="93" width="123" height="102" rx="8"/><rect x="200" y="93" width="123" height="102" rx="8"/><rect x="365" y="93" width="123" height="102" rx="8"/><rect x="530" y="93" width="116" height="102" rx="8"/></g>
-    <g fill="none" stroke="#72e3ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M75 131h11l6-11 7 21 7-10h12"/><path d="M246 121h30m-30 10h23m-23 10h16"/><path d="M412 131l9 8 19-20"/><path d="M578 140v-16l10-5 10 5v16h-20m7-8h6"/></g>
-    <g fill="#e2f4f5" font-family="Inter, sans-serif" font-size="13" text-anchor="middle" font-weight="650"><text x="96" y="166">Site signals</text><text x="261" y="166">Reconstruct</text><text x="426" y="166">Human review</text><text x="588" y="166">IFS Cloud</text></g>
-    <g fill="#a8c2cd" font-family="Inter, sans-serif" font-size="11" text-anchor="middle"><text x="96" y="181">Optional vision</text><text x="261" y="181">Rules + provenance</text><text x="426" y="181">Worker → manager</text><text x="588" y="181">ERP receipt</text></g>
-    <text x="35" y="45" fill="#8aeed9" font-size="12" font-family="monospace">EVIDENCE → DRAFT → APPROVAL → POSTING</text>
-    <text x="35" y="260" fill="#a8c2cd" font-size="12" font-family="monospace">CAMERA-FREE BASELINE / ONE SITE / 30 DAYS</text>
+    <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#392e40" stroke-width="1"/></pattern><marker id="cover-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0l6 3-6 3" fill="none" stroke="#73e7b0"/></marker></defs>
+    <rect x=".5" y=".5" width="679" height="301" rx="12" fill="url(#grid)" stroke="#594962"/>
+    <g fill="none" stroke="#73e7b0" stroke-width="2" marker-end="url(#cover-arrow)"><path d="M158 144h40"/><path d="M323 144h40"/><path d="M488 144h40"/></g>
+    <g stroke="#73e7b0" fill="#211a28"><rect x="35" y="93" width="123" height="102" rx="8"/><rect x="200" y="93" width="123" height="102" rx="8"/><rect x="365" y="93" width="123" height="102" rx="8"/><rect x="530" y="93" width="116" height="102" rx="8"/></g>
+    <g fill="none" stroke="#73e7b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M75 131h11l6-11 7 21 7-10h12"/><path d="M246 121h30m-30 10h23m-23 10h16"/><path d="M412 131l9 8 19-20"/><path d="M578 140v-16l10-5 10 5v16h-20m7-8h6"/></g>
+    <g fill="#f2edf3" font-family="Inter, sans-serif" font-size="13" text-anchor="middle" font-weight="650"><text x="96" y="166">Site signals</text><text x="261" y="166">Reconstruct</text><text x="426" y="166">Human review</text><text x="588" y="166">IFS Cloud</text></g>
+    <g fill="#c9becf" font-family="Inter, sans-serif" font-size="11" text-anchor="middle"><text x="96" y="181">Optional vision</text><text x="261" y="181">Rules + provenance</text><text x="426" y="181">Worker → manager</text><text x="588" y="181">ERP receipt</text></g>
+    <text x="35" y="45" fill="#86e6b7" font-size="12" font-family="monospace">EVIDENCE → DRAFT → APPROVAL → POSTING</text>
+    <text x="35" y="260" fill="#c9becf" font-size="12" font-family="monospace">CAMERA-FREE BASELINE / ONE SITE / 30 DAYS</text>
   </svg>
   <div class="cover-links"><span>Technical architecture brief · v1.0</span><a href="https://noptus.github.io/ifs-zero-touch-week/">Open the interactive showcase</a></div>
   <footer class="footer">Zero-Touch Week · Technical architecture brief</footer>
@@ -27,7 +27,7 @@
   <h2>Build the draft while the work happens.</h2>
   <p class="lead">Delayed time entry creates corrections, missing expenses, late reimbursements and unbilled work. Start with one site and the evidence already available to field workers.</p>
   <div class="columns">
-    <article class="card"><h3>Time tolerance</h3><p>Approximately 30 minutes. Confirm whether the tolerance applies to individual boundaries, total daily time, or both. Measure both during shadow mode.</p></article>
+    <article class="card"><h3>Time tolerance</h3><p>For each worker-day, compare pre-edit draft and approved reportable minutes. An absolute difference of 30 minutes or less meets the pilot target.</p></article>
     <article class="card"><h3>Activity codes</h3><p>Travel, work, waiting and break are illustrative. Each tenant maps permitted activity and pay codes under a versioned policy.</p></article>
   </div>
   <h3>Three people-facing responsibilities</h3>
@@ -50,11 +50,11 @@
   <p class="lead">Kairos/Nexus owns draft revisions and processing state. IFS Cloud F1 owns the authoritative approved time and expense transactions.</p>
   <figure class="diagram">
     <svg viewBox="0 0 660 277" role="img" aria-label="Fleet architecture with edge and IFS signals flowing through secure ingestion and Kafka to Go reconstruction, approval and IFS">
-      <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0l6 3-6 3" fill="none" stroke="#2d706b"/></marker></defs>
-      <g stroke="#2d706b" stroke-width="1.6" fill="none" marker-end="url(#arrow)"><path d="M144 48h37v26h26"/><path d="M144 110h37V84h26"/><path d="M337 79h29"/><path d="M487 79h23"/><path d="M574 104v43"/><path d="M510 173h-27"/><path d="M363 173h-26"/><path d="M210 173h-44"/><path d="M639 79h12v153H485" stroke-dasharray="4 3"/><path d="M270 198v34h90" stroke-dasharray="4 3"/></g>
-      <g fill="#eaf4f5" stroke="#8aadb3"><rect x="14" y="24" width="130" height="48" rx="6"/><rect x="14" y="86" width="130" height="48" rx="6"/><rect x="207" y="55" width="130" height="49" rx="6"/><rect x="366" y="55" width="121" height="49" rx="6"/><rect x="510" y="55" width="129" height="49" rx="6"/><rect x="510" y="148" width="129" height="50" rx="6"/><rect x="363" y="148" width="120" height="50" rx="6"/><rect x="207" y="148" width="130" height="50" rx="6"/><rect x="36" y="148" width="130" height="50" rx="6"/><rect x="360" y="212" width="126" height="44" rx="6"/></g>
-      <g fill="#193641" font-family="Inter, sans-serif" font-size="12" text-anchor="middle" font-weight="650"><text x="79" y="44">Optional site CV</text><text x="79" y="106">Operational signals</text><text x="272" y="75">Authenticated ingress</text><text x="426" y="75">Kafka</text><text x="575" y="75">Reconstruct</text><text x="575" y="168">Validate &amp; draft</text><text x="423" y="168">React review</text><text x="272" y="168">Writeback adapter</text><text x="101" y="168">IFS Cloud F1</text><text x="423" y="230">Owned state</text></g>
-      <g fill="#3e5c68" font-family="Inter, sans-serif" font-size="10" text-anchor="middle"><text x="79" y="59">Python edge + spool</text><text x="79" y="121">IFS + authorized check-in</text><text x="272" y="91">Nexus gateway / Go</text><text x="426" y="91">Replayable streams</text><text x="575" y="91">Go + optional Python</text><text x="575" y="184">Go policy engine</text><text x="423" y="184">Worker + manager</text><text x="272" y="184">Approval outbox</text><text x="101" y="184">OData / acknowledgment</text><text x="423" y="245">PostgreSQL + Blob</text></g>
+      <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0l6 3-6 3" fill="none" stroke="#76548c"/></marker></defs>
+      <g stroke="#76548c" stroke-width="1.6" fill="none" marker-end="url(#arrow)"><path d="M144 48h37v26h26"/><path d="M144 110h37V84h26"/><path d="M337 79h29"/><path d="M487 79h23"/><path d="M574 104v43"/><path d="M510 173h-27"/><path d="M363 173h-26"/><path d="M210 173h-44"/><path d="M639 79h12v153H485" stroke-dasharray="4 3"/><path d="M270 198v34h90" stroke-dasharray="4 3"/></g>
+      <g fill="#f1eaf5" stroke="#b49dc1"><rect x="14" y="24" width="130" height="48" rx="6"/><rect x="14" y="86" width="130" height="48" rx="6"/><rect x="207" y="55" width="130" height="49" rx="6"/><rect x="366" y="55" width="121" height="49" rx="6"/><rect x="510" y="55" width="129" height="49" rx="6"/><rect x="510" y="148" width="129" height="50" rx="6"/><rect x="363" y="148" width="120" height="50" rx="6"/><rect x="207" y="148" width="130" height="50" rx="6"/><rect x="36" y="148" width="130" height="50" rx="6"/><rect x="360" y="212" width="126" height="44" rx="6"/></g>
+      <g fill="#2b2031" font-family="Inter, sans-serif" font-size="12" text-anchor="middle" font-weight="650"><text x="79" y="44">Optional site CV</text><text x="79" y="106">Operational signals</text><text x="272" y="75">Authenticated ingress</text><text x="426" y="75">Kafka</text><text x="575" y="75">Reconstruct</text><text x="575" y="168">Validate &amp; draft</text><text x="423" y="168">React review</text><text x="272" y="168">Writeback adapter</text><text x="101" y="168">IFS Cloud F1</text><text x="423" y="230">Owned state</text></g>
+      <g fill="#605568" font-family="Inter, sans-serif" font-size="10" text-anchor="middle"><text x="79" y="59">Python edge + spool</text><text x="79" y="121">IFS + authorized check-in</text><text x="272" y="91">Nexus gateway / Go</text><text x="426" y="91">Replayable streams</text><text x="575" y="91">Go + optional Python</text><text x="575" y="184">Go policy engine</text><text x="423" y="184">Worker + manager</text><text x="272" y="184">Approval outbox</text><text x="101" y="184">OData / acknowledgment</text><text x="423" y="245">PostgreSQL + Blob</text></g>
     </svg>
     <figcaption>Solid arrows show the decision flow. Dashed lines link components to application-owned state. Confirm platform boundaries and gateway capabilities with the IFS owners.</figcaption>
   </figure>
@@ -73,10 +73,10 @@
   <p class="lead">Enable only at approved entrance and exit zones. Run a camera-free baseline first and measure incremental value before retaining this capability.</p>
   <figure class="diagram">
     <svg viewBox="0 0 660 112" role="img" aria-label="RTSP decoder, sampler, detector, short-lived tracker and local SQLite outbox">
-      <g fill="#e8f5f0" stroke="#90b6b1"><rect x="9" y="17" width="118" height="65" rx="6"/><rect x="140" y="17" width="118" height="65" rx="6"/><rect x="271" y="17" width="118" height="65" rx="6"/><rect x="402" y="17" width="118" height="65" rx="6"/><rect x="533" y="17" width="118" height="65" rx="6"/></g>
-      <g fill="#1d4648" font-size="18" font-family="Inter, sans-serif" text-anchor="middle"><text x="133" y="55">›</text><text x="264" y="55">›</text><text x="395" y="55">›</text><text x="526" y="55">›</text></g>
-      <g fill="#193641" font-family="Inter, sans-serif" font-size="12" text-anchor="middle" font-weight="650"><text x="68" y="47">Decode</text><text x="199" y="47">Sample &amp; mask</text><text x="330" y="47">Detect people</text><text x="461" y="47">Track &amp; cross</text><text x="592" y="47">Durable spool</text></g>
-      <g fill="#3e5c68" font-family="Inter, sans-serif" font-size="9.5" text-anchor="middle"><text x="68" y="63">RTSP · FFmpeg</text><text x="199" y="63">Entrance zone</text><text x="330" y="63">Benchmarked model</text><text x="461" y="63">Short-lived tracks</text><text x="592" y="63">SQLite · HTTPS</text></g>
+      <g fill="#f1eaf5" stroke="#b49dc1"><rect x="9" y="17" width="118" height="65" rx="6"/><rect x="140" y="17" width="118" height="65" rx="6"/><rect x="271" y="17" width="118" height="65" rx="6"/><rect x="402" y="17" width="118" height="65" rx="6"/><rect x="533" y="17" width="118" height="65" rx="6"/></g>
+      <g fill="#603680" font-size="18" font-family="Inter, sans-serif" text-anchor="middle"><text x="133" y="55">›</text><text x="264" y="55">›</text><text x="395" y="55">›</text><text x="526" y="55">›</text></g>
+      <g fill="#2b2031" font-family="Inter, sans-serif" font-size="12" text-anchor="middle" font-weight="650"><text x="68" y="47">Decode</text><text x="199" y="47">Sample &amp; mask</text><text x="330" y="47">Detect people</text><text x="461" y="47">Track &amp; cross</text><text x="592" y="47">Durable spool</text></g>
+      <g fill="#605568" font-family="Inter, sans-serif" font-size="9.5" text-anchor="middle"><text x="68" y="63">RTSP · FFmpeg</text><text x="199" y="63">Entrance zone</text><text x="330" y="63">Benchmarked model</text><text x="461" y="63">Short-lived tracks</text><text x="592" y="63">SQLite · HTTPS</text></g>
     </svg>
     <figcaption>Stream decoding and sampling are distinct costs. Measure throughput across the full pipeline.</figcaption>
   </figure>
@@ -179,15 +179,15 @@ cloud workers = ceil(frames/day /
   <h2>Earn the right to expand.</h2>
   <p class="lead">Use one customer and one site. Compare the workflow to the current process and camera-assisted reconstruction to the camera-free baseline where permitted.</p>
   <table class="pilot-table"><thead><tr><th>Days</th><th>Delivery and test</th><th>Decision gate</th></tr></thead><tbody>
-    <tr><td>01–07</td><td>Discover IFS contracts, confirm scope, capture manual baseline, review permissions and profile hardware.</td><td>Approve cohort, metrics, tolerance, lawful basis and evidence handling.</td></tr>
+    <tr><td>01–07</td><td>Discover IFS contracts, confirm scope, capture manual baseline, review permissions and profile hardware.</td><td>Approve cohort, comparable worker-day rules, lawful basis and evidence handling.</td></tr>
     <tr><td>08–14</td><td>Build and replay the operational-event pipeline. Exercise offline buffering, duplicates, gaps and clock handling.</td><td>Deterministic replay and visible failure states. Vision remains conditional.</td></tr>
     <tr><td>15–21</td><td>Shadow drafts against approved records. Run worker correction and manager review. Measure errors by shift and evidence coverage.</td><td>Production payroll stays disconnected. Review high-impact false approvals.</td></tr>
     <tr><td>22–30</td><td>Run assisted review, test ERP acknowledgment in an approved environment and measure cost and time saved.</td><td>Approve, extend or stop based on signed thresholds and resolved privacy risks.</td></tr>
   </tbody></table>
   <h3>Scorecard</h3>
-  <p>Track median/p90 absolute error and the share of daily totals and boundaries within tolerance. Measure per-category precision/recall, allocation match, worker corrections, worker/manager minutes, missing signals, false and missed crossings, harmful approvals, cost per site/day and compliance gates.</p>
-  <p>Agree denominators and ground-truth labeling before shadow mode. Treat missing records as a separately reported coverage outcome. Include cameras-off, connectivity-limited and atypical shifts in the sample. Compare results by cohort with uncertainty intervals.</p>
-  <div class="callout"><p><strong>Illustrative hypotheses only.</strong> At least 90% of eligible daily totals within the agreed tolerance, measurable worker time saved and zero observed harmful approvals. Confirm sample size and acceptance criteria with the tenant before use.</p></div>
+  <p>Compare draft totals before worker edits with approved reportable minutes for the same worker and site-local day under the same tenant rules. A draft of 7h 50m against 8h 15m approved is 25 minutes off and meets the target. Track the share within 30 minutes, median/p90 absolute daily error, and interval-boundary error separately. Measure category accuracy, allocation match, staff time, missing signals, false and missed crossings, harmful approvals, cost and compliance gates.</p>
+  <p>Agree denominators and ground-truth labeling before shadow mode. Report missing drafts or approved references as coverage gaps. Include cameras-off, connectivity-limited and atypical shifts in the sample. Compare results by cohort with uncertainty intervals.</p>
+  <div class="callout"><p><strong>Illustrative hypotheses only.</strong> At least 90% of comparable worker-days within 30 minutes, measurable worker time saved and zero observed harmful approvals. Confirm sample size and acceptance criteria with the tenant before use.</p></div>
   <footer class="footer">Zero-Touch Week · 30-day pilot</footer>
 </section>
 
@@ -197,7 +197,7 @@ cloud workers = ceil(frames/day /
   <p class="lead">Progress through gated releases. Document the observed errors and cost before committing to a regional fleet.</p>
   <table><thead><tr><th>Risk</th><th>Response</th></tr></thead><tbody>
     <tr><td>Vision adds little value</td><td>Keep the camera-free workflow. Add approved entrance vision only for measured improvement that justifies its burden.</td></tr>
-    <tr><td>Ambiguous payroll precision</td><td>Agree acceptable error for boundaries and totals and what constitutes compensable work. Version tenant-specific rules.</td></tr>
+    <tr><td>Acceptable total, inaccurate intervals</td><td>Measure interval boundaries and allocations separately. Apply the same tenant reporting rules to the draft and approved totals.</td></tr>
     <tr><td>ERP outcome is uncertain</td><td>Confirm the projection and reconciliation mechanism in the target release. Block unsafe retries when outcome lookup is unavailable.</td></tr>
     <tr><td>Tenant or regional drift</td><td>Validate model behavior and worker rights per jurisdiction. Roll out by cohort and monitor changes in evidence coverage.</td></tr>
     <tr><td>Scaling creates cost or privacy exposure</td><td>Prefer metadata, measure demand and per-site load, and validate quota, residency, restore and deletion before expansion.</td></tr>

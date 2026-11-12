@@ -6,4 +6,4 @@
 4. **Evaluate optional enhancements.** Test edge cameras only with purpose and notice controls. Compare to camera-free baseline on matched shifts. Add ML after forward and tenant-held-out validation. Consider receipts and expense workflow through separate IFS contracts and explicit worker attestations.
 5. **Operate and audit.** Define SLOs from measured evidence and posting delays. Rehearse credential revocation, backup restore, model rollback, deletion, camera disablement and writeback pause. Capture production outcomes before expanding the cohort.
 
-Open questions include tolerance scope, regional residence, tenant overrides, approved use of site-access records, authoritative timestamps, the supported writeback contract and the economic case for cameras.
+Open questions include regional residence, tenant overrides, approved use of site-access records, authoritative timestamps, the supported writeback contract and the economic case for cameras.

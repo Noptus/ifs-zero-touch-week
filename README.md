@@ -55,6 +55,8 @@ On a fresh Linux runner use `npx playwright install --with-deps chromium`. The P
 
 The hosted application is a static React demonstrator. Fictional worker, work-order and camera evidence lives in the browser. State resets on reload. The mock covers same-day editing for a single workweek, with overnight shifts, multi-order reconciliation and offline client sync designed in the technical notes. Manager decisions stay in the demo. No live camera, Azure, Kafka, payroll or IFS connection is provisioned.
 
-Capacity presets are illustrative assumptions in USD. They are editable and contain no measured throughput, production customer footprint, region-specific quota or Azure price quote. Confirm how the roughly 30-minute tolerance applies before selecting pilot metrics.
+Capacity presets are illustrative assumptions in USD. They are editable and contain no measured throughput, production customer footprint, region-specific quota or Azure price quote.
+
+The pilot counts a comparable worker-day as within target when the absolute difference between pre-edit draft and approved reportable minutes is 30 minutes or less. Compare under the same tenant rules and site-local reporting day. Track interval-boundary error and missing draft/reference coverage separately.
 
 This project is independent of IFS. No employee information, credentials, real footage or model weights are included.
