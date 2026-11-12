@@ -102,9 +102,9 @@ function LiveFeed() {
       <div className="live-grid">
         <div className="app-panel live-card">
           <div className="live-toolbar">
-            <label htmlFor="live-camera">Camera</label><select id="live-camera" value={source} disabled={run} onChange={e => { setSource(e.target.value); setReadings([]); setError(''); setStatus('Idle'); setPreview(feed); }}>
+            <div className="live-source"><label htmlFor="live-camera">Camera</label><select id="live-camera" value={source} disabled={run} onChange={e => { setSource(e.target.value); setReadings([]); setError(''); setStatus('Idle'); setPreview(feed); }}>
               <option value="usgs">USGS Kīlauea webcam</option><option value="webcam">My webcam</option>
-            </select>
+            </select></div>
             <button className="button primary small" disabled={!enabled} onClick={() => { setError(''); setStatus(run ? 'Stopped' : 'Starting…'); setRun(!run); }}><Video size={15} /> {run ? 'Stop' : 'Start analysis'}</button>
           </div>
           {source === 'usgs'
