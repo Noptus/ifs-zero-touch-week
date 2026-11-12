@@ -1,0 +1,95 @@
+import { test, expect } from '@playwright/test';
+
+test('worker correction moves through manager exceptions and approval', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('link', { name: 'Explore the demo' }).click();
+  await page.getByRole('switch', { name: /camera evidence/i }).click();
+  await page.getByRole('button', { name: /waiting for site clearance/i }).click();
+  await expect(page.getByText(/anonymous inbound crossing/)).toBeVisible();
+  await page.getByRole('button', { name: 'Review the proposed week' }).click();
+  await page.getByRole('button', { name: 'Submit draft' }).click();
+  await expect(page.getByRole('alert')).toContainText('unresolved Monday');
+  await page.getByLabel('Activity for 0-e4').selectOption('Break');
+  await page.getByLabel('Project for 0-e4').selectOption('Northline Retrofit');
+  await page.getByRole('button', { name: 'Confirm gap' }).click();
+  await page.getByRole('button', { name: 'Submit draft' }).click();
+  await expect(page.getByText(/exceeds this demo/)).toBeVisible();
+  await expect(page.getByText(/differs from the source work order/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
+
+  await page.getByRole('textbox', { name: /manager note/i }).fill('Confirm project with dispatch.');
+  await page.getByRole('button', { name: 'Request changes' }).click();
+  await expect(page.getByRole('status')).toContainText('Confirm project with dispatch.');
+  await page.getByRole('button', { name: 'Open worker view' }).click();
+  await page.getByLabel('Project for 0-e4').selectOption('Harbor Works');
+  await page.getByRole('button', { name: 'Submit draft' }).click();
+  await page.getByLabel('I reviewed the flagged exceptions.').check();
+  await page.getByRole('button', { name: 'Approve', exact: true }).click();
+  await expect(page.getByRole('status')).toContainText('Approved in the demo');
+  await page.getByRole('button', { name: /Mika Chen/ }).click();
+  await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
+  await page.getByRole('textbox', { name: /manager note/i }).fill('Missing end-of-shift evidence.');
+  await page.getByRole('button', { name: 'Reject', exact: true }).click();
+  await expect(page.getByRole('status')).toContainText('Missing end-of-shift evidence.');
+});
+
+test('calculator and technical diagrams respond to changes', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: 'One-site pilot' }).click();
+  await expect(page.getByText('ONE SITE · SHADOW MODE')).toBeVisible();
+  await page.getByRole('button', { name: /validate policy/i }).click();
+  await expect(page.getByText('Unknown or stale policy', { exact: false })).toBeVisible();
+  await page.getByRole('button', { name: 'Camera-free', exact: true }).click();
+  await expect(page.getByText('0 GB', { exact: true }).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Pilot', exact: true }).click();
+  await expect(page.getByText('12.96 GB', { exact: true }).first()).toBeVisible();
+  await page.getByLabel('Sample rate').fill('1');
+  await expect(page.getByText('6.48 GB', { exact: true }).first()).toBeVisible();
+  await page.getByText('Throughput, utilization & event assumptions').click();
+  await page.getByLabel('Cloud processing window').fill('0.1');
+  await expect(page.getByText('Startup consumes the full cloud window.')).toBeVisible();
+  await page.getByText('Equations, units & exclusions').click();
+  await expect(page.getByText('edge workers/site', { exact: false })).toBeVisible();
+  await page.getByRole('button', { name: /Days 22–30/ }).click();
+  await expect(page.getByText('zero observed harmful approvals', { exact: false })).toBeVisible();
+});
+
+test('architecture brief opens and downloads as a PDF', async ({ page, request }) => {
+  await page.goto('./');
+  const link = page.getByRole('link', { name: 'View PDF', exact: true });
+  const path = await link.getAttribute('href');
+  expect(path).toBeTruthy();
+  const response = await request.get(path!);
+  expect(response.ok()).toBeTruthy();
+  expect(response.headers()['content-type']).toContain('application/pdf');
+  expect((await response.body()).subarray(0, 5).toString()).toBe('%PDF-');
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('link', { name: 'Download architecture PDF', exact: true }).click(),
+  ]);
+  expect(download.suggestedFilename()).toBe('zero-touch-week-architecture.pdf');
+});
+
+for (const width of [390, 768, 1440]) {
+  test(`responsive layout at ${width}px`, async ({ page }, testInfo) => {
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('./');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await page.evaluate(() => document.fonts.ready.then(() => undefined));
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    if (width < 640) {
+      await page.getByRole('button', { name: 'Sections' }).click();
+      await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible();
+      await page.getByRole('navigation', { name: 'Main navigation' }).getByText('Architecture').click();
+      await expect(page.getByRole('button', { name: 'Sections' })).toHaveAttribute('aria-expanded', 'false');
+      await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+    }
+    await page.locator('.brief-preview img').scrollIntoViewIfNeeded();
+    await expect.poll(() => page.locator('.brief-preview img').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+    await page.screenshot({ fullPage: true, path: testInfo.outputPath('showcase.png'), animations: 'disabled' });
+    expect(errors).toEqual([]);
+  });
+}

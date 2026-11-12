@@ -1,0 +1,51 @@
+@font-face { font-family: Inter; src: url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Space; src: url('../../node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2') format('woff2'); font-weight: 300 700; }
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #182d3a; font: 10.5pt/1.48 Inter, Arial, sans-serif; counter-reset: page-number; }
+.page { width: 210mm; height: 297mm; background: #f7f9fa; padding: 17mm 17mm 19mm; position: relative; break-after: page; counter-increment: page-number; }
+.page:last-child { break-after: auto; }
+h1, h2, h3, h4, p, figure, dl, dd { margin: 0; }
+h1, h2, h3, h4 { font-family: Space, Arial, sans-serif; }
+h1, h2 { letter-spacing: -.055em; }
+h2 { font-size: 35pt; line-height: 1.02; color: #10232e; margin: 3mm 0 4mm; max-width: 160mm; }
+h3 { font-size: 15pt; line-height: 1.15; margin: 5mm 0 2mm; }
+p { margin-bottom: 2.6mm; }
+a { color: #005c67; }
+ul { padding-left: 5mm; margin: 2mm 0 3mm; }
+li + li { margin-top: 1mm; }
+.kicker { font: 650 8.5pt/1.4 Inter, sans-serif; text-transform: uppercase; letter-spacing: .17em; color: #126759; }
+.lead { color: #48616e; font-size: 11.5pt; max-width: 160mm; margin-bottom: 5mm; }
+.footer { position: absolute; left: 17mm; right: 17mm; bottom: 10mm; display: flex; justify-content: space-between; border-top: .3mm solid #bacbd0; color: #46636f; padding-top: 2.7mm; font-size: 8pt; }
+.footer::after { content: counter(page-number, decimal-leading-zero) " / 10"; font-weight: 650; }
+.cover { color: #e5f2f4; background: #0c1c27; }
+.cover .kicker, .cover em { color: #6cebd0; }
+.cover h1 { font-size: 68pt; line-height: .89; margin: 14mm 0 6mm; }
+.cover em { font-style: normal; }
+.cover .subtitle { font: 600 18pt/1.2 Space, sans-serif; letter-spacing: -.025em; }
+.cover .lead { color: #afc7d3; max-width: 134mm; }
+.cover .footer { border-color: #41616e; color: #abc5d1; }
+.cover svg { width: 100%; height: auto; margin-top: 1.5mm; display: block; }
+.cover-links { display: flex; justify-content: space-between; gap: 3mm; border-top: .3mm solid #42606c; margin-top: 4mm; padding-top: 3mm; color: #c7dde5; font-size: 8.5pt; }
+.cover-links a { color: #8aeed9; }
+.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.card { border: .3mm solid #c8d9dd; border-radius: 2mm; padding: 3.5mm; background: #fff; break-inside: avoid; }
+.card h3 { margin: 0 0 1.5mm; font-size: 13pt; }
+.card p:last-child, .callout p:last-child { margin-bottom: 0; }
+.callout { border-left: 1mm solid #217b6e; background: #e8f4f1; padding: 3mm 4mm; margin: 4mm 0; break-inside: avoid; }
+.callout.amber { border-color: #ac6e39; background: #faf0e5; }
+.diagram { margin: 4mm 0; padding: 3mm; border: .3mm solid #c8d9dd; border-radius: 2mm; background: white; break-inside: avoid; }
+.diagram svg { display: block; width: 100%; }
+.diagram figcaption { color: #48616e; font-size: 8.5pt; margin-top: 2mm; }
+table { border-collapse: collapse; width: 100%; margin: 3mm 0; font-size: 9.1pt; }
+th, td { padding: 2.1mm 2.7mm; border-bottom: .25mm solid #ccdadf; vertical-align: top; text-align: left; }
+th { background: #173a47; color: white; font-weight: 650; }
+tbody tr:nth-child(odd) { background: #edf3f5; }
+td:first-child { font-weight: 650; }
+code, pre { font-family: "DejaVu Sans Mono", Menlo, monospace; font-size: 8.5pt; }
+pre { margin: 3mm 0; padding: 3mm; background: #112732; color: #e2f7f6; border-radius: 1.5mm; white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid; }
+.refs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5mm 4mm; margin: 2mm 0; padding: 0; list-style: none; font-size: 8.7pt; }
+.refs li { margin: 0; }
+@media screen { body { background: #e5edf0; } .page { margin-inline: auto; } }
+
+.pilot-table td:first-child { min-width: 16mm; white-space: nowrap; }
