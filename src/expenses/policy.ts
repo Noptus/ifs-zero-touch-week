@@ -82,13 +82,16 @@ export function assess(receipt: Receipt, spent: number, possibleDuplicate = fals
   if (receipt.aiSignal) issues.push('AI-generation metadata was found. It is an unverified signal and needs review.');
   if (receipt.lowConfidence) issues.push('Low scan confidence. Compare the extracted fields with the photo.');
   if (receipt.corrected) issues.push('Receipt fields were corrected. A reviewer checks the changes against the photo.');
-  if (!receipt.merchant.trim() || !validDate(receipt.date) || receipt.total === null || receipt.total <= 0) {
-    issues.push('Confirm the merchant, purchase date and receipt total.');
-  }
+  const missingDetails = [
+    !receipt.merchant.trim() && 'merchant',
+    !validDate(receipt.date) && 'purchase date',
+    (receipt.total === null || receipt.total <= 0) && 'receipt total',
+  ].filter(Boolean);
+  if (missingDetails.length) issues.push(`Missing details: ${missingDetails.join(', ')}.`);
   if (receipt.currency !== 'EUR') issues.push('EUR is required for automatic allowance checks.');
   if (!receipt.lines.length) issues.push('Add at least one receipt item.');
   const lineTotal = receipt.lines.reduce((sum, line) => sum + (line.cents ?? 0), 0);
-  if (receipt.total !== null && (receipt.lines.some(line => line.cents === null) || lineTotal !== receipt.total)) {
+  if (receipt.total !== null && receipt.lines.length > 0 && receipt.lines.every(line => line.cents !== null) && lineTotal !== receipt.total) {
     issues.push('Item amounts do not add up to the receipt total. Check for tax, discounts or missing lines.');
   }
   if (receipt.currency === 'EUR' && workRequested > remaining) issues.push('Work items exceed the remaining monthly allowance.');

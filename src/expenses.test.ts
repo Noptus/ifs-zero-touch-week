@@ -45,3 +45,30 @@ test('detects the explicit fixture marker and leaves unmarked photos unverified'
     assert.equal(hasAiSourceMarker(buffer), expected);
   }
 });
+
+test('recovers the priced GBP item and ignores noise, subtotals and tender rows', () => {
+  const text = [
+    'x. — 7 AT = & +" on ©. rer',
+    'SALES RECEIPT .',
+    '. Qty Item Description                  Price    x',
+    '1x Strongbow Bottle                       £4.00      =',
+    '1x Items Sold                    -',
+    ':      Sub Total:                                          £4.00 Qu',
+    'Total:                                    £4.00 &%',
+    'Cash                                          £10.00',
+    'We Tendered Total:                            £10.00 EN',
+    'Change:                                       £6.00       -',
+    'THANK YOU',
+  ].join('\n');
+  const receipt = parseReceiptText(text, 65, false, 'digest');
+  assert.equal(receipt.merchant, '');
+  assert.equal(receipt.date, '');
+  assert.equal(receipt.currency, 'GBP');
+  assert.equal(receipt.total, 400);
+  assert.deepEqual(receipt.lines, [{ description: 'Strongbow Bottle', quantity: 1, cents: 400 }]);
+  assert.deepEqual(assess(receipt, 0).issues, [
+    'Low scan confidence. Compare the extracted fields with the photo.',
+    'Missing details: merchant, purchase date.',
+    'EUR is required for automatic allowance checks.',
+  ]);
+});

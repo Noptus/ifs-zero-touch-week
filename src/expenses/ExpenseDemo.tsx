@@ -88,7 +88,7 @@ export default function ExpenseDemo() {
   }
 
   function submit() {
-    if (!receipt || !month || !keys.length || !receipt.lines.length) return;
+    if (!receipt || !keys.length || !receipt.lines.length) return;
     setSession(current => {
       if (current.result || hasMatchingKey(keys, current.submitted, 'file:')) return current;
       const used = current.ledger[month] ?? 0;
@@ -179,7 +179,7 @@ export default function ExpenseDemo() {
         {duplicate && <p className="inline-note" role="alert"><CircleAlert size={15} /> This receipt was already submitted in this session.</p>}
         <div className="expense-submit">
           <div><small>Policy-eligible items</small><strong>{euros(check.eligible)}</strong></div>
-          {!result && <button type="button" className="button primary" disabled={duplicate || !month || !keys.length || !receipt.lines.length || (!check.needsReview && check.eligible === 0)} onClick={submit}>
+          {!result && <button type="button" className="button primary" disabled={duplicate || !keys.length || !receipt.lines.length || (!check.needsReview && check.eligible === 0)} onClick={submit}>
             {check.needsReview ? 'Send for review' : 'Confirm and submit'} <ArrowRight size={15} />
           </button>}
         </div>

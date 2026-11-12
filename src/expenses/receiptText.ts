@@ -19,9 +19,24 @@ function findDate(text: string) {
   return validDate(date) ? date : '';
 }
 
+const genericTitle = /^(?:(?:sales\s+)?receipt|reçu(?:\s+de\s+vente)?|ticket\s+de\s+caisse)[\s.:=|–-]*$/i;
+const ignoredLabels = /^(?:sub[\s-]*total|sous[\s-]*total|total|tax|vat|tva|change|cash|carte|card|payment|tendered|discount|remise|date|receipt|ticket)\b|\b(?:tendered total|amount tendered)\b/i;
+const trailingAmount = /\s+((?:[€$£]\s*)?\d[\d.,]*(?:[.,]\d{2})(?:\s?(?:EUR|USD|GBP|[€$£]))?)$/i;
+const amountWithMarginNoise = /[ \t]{2,}([€$£]\s*\d[\d.,]*[.,]\d{2})(?:[ \t]{2,}[^\d€$£]{1,3}|[ \t]+[^\p{L}\p{N}\s€$£]{1,3})$/u;
+
 export function parseReceiptText(text: string, confidence: number, aiSignal: boolean, digest: string): Receipt {
   const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-  const merchant = lines[0] && !/^(?:receipt|reçu|demo|sample)\b/i.test(lines[0]) ? lines[0].slice(0, 100) : '';
+  const titleIndex = lines.slice(0, 6).findIndex(line => genericTitle.test(line));
+  const candidates = titleIndex >= 0 ? lines.slice(titleIndex + 1) : lines;
+  const merchantLabel = /^(?:merchant|store|magasin|commerçant)\s*:\s*(.+)$/i;
+  const merchantCandidate = titleIndex >= 0
+    ? lines.slice(0, titleIndex + 2).map(line => merchantLabel.exec(line)?.[1]).find(Boolean)
+      ?? (titleIndex === 1 && confidence >= 75 ? lines[0] : undefined)
+    : candidates[0];
+  const merchant = merchantCandidate && /\p{L}/u.test(merchantCandidate)
+    && !/^(?:receipt|reçu|demo|sample|qty|quantity|date|total)\b/i.test(merchantCandidate)
+    && !trailingAmount.test(merchantCandidate) && !findDate(merchantCandidate)
+    ? merchantCandidate.slice(0, 100) : '';
   const currencies = [
     /\bEUR\b|€/i.test(text) ? 'EUR' : '',
     /\bUSD\b|\$/i.test(text) ? 'USD' : '',
@@ -31,17 +46,17 @@ export function parseReceiptText(text: string, confidence: number, aiSignal: boo
   const items: Line[] = [];
   let total: number | null = null;
 
-  for (const line of lines.slice(merchant ? 1 : 0)) {
-    const amount = /\s+((?:[€$£]\s*)?\d[\d.,]*(?:[.,]\d{2})(?:\s?(?:EUR|USD|GBP|[€$£]))?)$/i.exec(line);
+  for (const line of candidates.slice(titleIndex < 0 && merchant ? 1 : 0)) {
+    const amount = trailingAmount.exec(line) ?? amountWithMarginNoise.exec(line);
     if (!amount) continue;
-    const label = line.slice(0, amount.index).replace(/[:\s]+$/, '').trim();
+    const label = line.slice(0, amount.index).replace(/^[|:;.,\s]+|[:\s]+$/g, '');
     const cents = parseMoney(amount[1]);
     if (cents === null) continue;
     if (/^(?:(?:grand )?total(?:\s+ttc)?|amount due|à payer)$/i.test(label)) {
       total = cents;
       continue;
     }
-    if (/^(?:sub.?total|sous.?total|total|tax|vat|tva|change|cash|carte|card|payment|discount|remise|date|receipt|ticket)\b/i.test(label) || !/\p{L}/u.test(label)) continue;
+    if (ignoredLabels.test(label) || !/\p{L}/u.test(label)) continue;
     const quantity = /^(\d+)\s*[x×]\s*/i.exec(label);
     items.push({ description: label.slice(quantity?.[0].length ?? 0, 100), quantity: Number(quantity?.[1] ?? 1), cents });
   }
