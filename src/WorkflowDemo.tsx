@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ArrowRight, CalendarDays, Check, ChevronRight, CircleAlert, Clock3, Fingerprint, ScanLine, ShieldCheck } from 'lucide-react';
 import { activities, clock, dates, days, duration, makeWeek, minutes, projects, sumMinutes, validate } from './workflow';
 import type { Activity, Interval, Project } from './workflow';
@@ -11,6 +11,7 @@ const mondayRows = initialWeek.filter(row => row.day === 0);
 
 export default function WorkflowDemo() {
   const [stage, setStage] = useState<Stage>('journey');
+  const stageNav = useRef<HTMLElement>(null);
   const [selected, setSelected] = useState(0);
   const [camera, setCamera] = useState(false);
   const [day, setDay] = useState(0);
@@ -32,6 +33,11 @@ export default function WorkflowDemo() {
   const flags = rows.filter(entry => entry.edited && entry.project !== initialWeek.find(original => original.id === entry.id)?.project);
   const activeStatus = inbox === 'ari' ? status : otherStatus;
 
+  function goTo(next: Stage) {
+    setStage(next);
+    stageNav.current?.querySelector<HTMLButtonElement>(`[data-stage="${next}"]`)?.focus();
+  }
+
   function update(id: string, patch: Partial<Interval>) {
     setRows(current => current.map(entry => entry.id === id ? { ...entry, ...patch, edited: true } : entry));
   }
@@ -44,7 +50,7 @@ export default function WorkflowDemo() {
     setReason('');
     setDecision('');
     setInbox('ari');
-    setStage('manager');
+    goTo('manager');
   }
 
   function resolve(next: Status) {
@@ -63,8 +69,8 @@ export default function WorkflowDemo() {
   }
 
   return <div className="app-panel">
-    <nav className="stage-nav" aria-label="Demo steps">
-      {(Object.keys(stageNames) as Stage[]).map((key, index) => <button key={key} type="button" aria-pressed={stage === key} onClick={() => setStage(key)}><span>0{index + 1}</span> {stageNames[key]}</button>)}
+    <nav ref={stageNav} className="stage-nav" aria-label="Demo steps">
+      {(Object.keys(stageNames) as Stage[]).map((key, index) => <button key={key} type="button" data-stage={key} aria-pressed={stage === key} onClick={() => setStage(key)}><span>0{index + 1}</span> {stageNames[key]}</button>)}
     </nav>
     {stage === 'journey' && <div className="demo-body">
       <div className="demo-toolbar">
@@ -86,7 +92,7 @@ export default function WorkflowDemo() {
             {row.evidence.map(e => <dd className="evidence-source" key={e.id}><Clock3 size={14} /><div><strong>{e.label}</strong><small>{e.source}</small></div></dd>)}
           </dl>
           {camera && <div className="inline-note"><ScanLine size={16} /> {selected === 1 ? 'Gate A recorded an anonymous inbound crossing at 08:46. The dispatch log supports Ari’s interval.' : 'Camera evidence is optional. This interval uses operational records.'}</div>}
-          <button type="button" className="text-button" onClick={() => { setDay(0); setStage('worker'); }}>Review the proposed week <ArrowRight size={15} /></button>
+          <button type="button" className="text-button" onClick={() => { setDay(0); goTo('worker'); }}>Review the proposed week <ArrowRight size={15} /></button>
         </div>
       </div>
     </div>}
@@ -124,7 +130,7 @@ export default function WorkflowDemo() {
         <h3>{inbox === 'ari' ? 'Ari Morgan' : 'Mika Chen'} <span className="tag">{activeStatus}</span></h3>
         {inbox === 'ari' && <div className="review-totals">
           <span>{duration(weeklyMinutes)} excluding breaks and unresolved gaps</span>
-          <button className="text-button" onClick={() => setStage('worker')}>See intervals <ArrowRight size={15} /></button>
+          <button className="text-button" onClick={() => goTo('worker')}>See intervals <ArrowRight size={15} /></button>
         </div>}
         <div className="approval-flags">
           {inbox === 'mika' ? <><div className="inline-note"><CircleAlert size={16} /> Missing end-of-shift evidence on Thursday. Worker correction is required.</div><div className="inline-note"><CircleAlert size={16} /> Friday’s proposed allocation conflicts with the assignment roster.</div></> : <>
@@ -144,7 +150,7 @@ export default function WorkflowDemo() {
           </div>
         </>}
         {activeStatus !== 'Pending review' && <p className="status-line" role="status">{activeStatus === 'Approved locally' ? 'Approved in the demo. An ERP writeback would require a separate acknowledged transaction.' : (inbox === 'ari' ? decision : otherDecision) || 'Submit Ari’s draft from the worker view to open manager review.'}</p>}
-        {inbox === 'ari' && editable && <button className="text-button" onClick={() => setStage('worker')}>Open worker view <ArrowRight size={15} /></button>}
+        {inbox === 'ari' && editable && <button className="text-button" onClick={() => goTo('worker')}>Open worker view <ArrowRight size={15} /></button>}
       </div>
     </div>}
   </div>;

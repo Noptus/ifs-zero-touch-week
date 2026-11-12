@@ -7,8 +7,12 @@ test('worker correction moves through manager exceptions and approval', async ({
   await page.getByRole('button', { name: /waiting for site clearance/i }).click();
   await expect(page.getByText(/anonymous inbound crossing/)).toBeVisible();
   await page.getByRole('button', { name: 'Review the proposed week' }).click();
+  await expect(page.getByRole('button', { name: /confirm timesheet/i })).toBeFocused();
+  await page.getByLabel('End for 0-e1').fill('08:50');
   await page.getByRole('button', { name: 'Submit draft' }).click();
   await expect(page.getByRole('alert')).toContainText('unresolved Monday');
+  await expect(page.getByRole('alert')).toContainText('Mon contains overlapping intervals.');
+  await page.getByLabel('End for 0-e1').fill('08:45');
   await page.getByLabel('Activity for 0-e4').selectOption('Break');
   await page.getByLabel('Project for 0-e4').selectOption('Northline Retrofit');
   await page.getByRole('button', { name: 'Confirm gap' }).click();
@@ -70,17 +74,20 @@ test('architecture brief opens and downloads as a PDF', async ({ page, request }
   expect(download.suggestedFilename()).toBe('zero-touch-week-architecture.pdf');
 });
 
-for (const width of [390, 768, 1440]) {
+for (const width of [320, 390, 768, 1440]) {
   test(`responsive layout at ${width}px`, async ({ page }, testInfo) => {
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize({ width, height: 900 });
     await page.goto('./');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
     await page.evaluate(() => document.fonts.ready.then(() => undefined));
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     if (width < 640) {
-      await page.getByRole('button', { name: 'Sections' }).click();
+      await page.getByRole('button', { name: 'Sections' }).focus();
+      await page.keyboard.press('Enter');
       await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible();
       await page.getByRole('navigation', { name: 'Main navigation' }).getByText('Architecture').click();
       await expect(page.getByRole('button', { name: 'Sections' })).toHaveAttribute('aria-expanded', 'false');

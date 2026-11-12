@@ -81,7 +81,7 @@ svg { flex-shrink: 0; }
 .section-title > p:last-child, .brief-banner p { max-width: 70ch; color: var(--muted); }
 .app-panel, .architecture-panel, .capacity-panel, .roadmap { border: 1px solid var(--edge); background: var(--surface); border-radius: 14px; overflow: hidden; }
 .stage-nav { display: flex; gap: 8px; border-bottom: 1px solid var(--edge); padding: 0 21px; background: #0e1924; }
-.stage-nav button { padding: 15px 12px 13px; color: var(--muted); font-weight: 620; font-size: .86rem; border-bottom: 2px solid transparent; }
+.stage-nav button { scroll-margin-top: 82px; padding: 15px 12px 13px; color: var(--muted); font-weight: 620; font-size: .86rem; border-bottom: 2px solid transparent; }
 .stage-nav button span { color: #9cbed2; margin-right: 3px; font: 650 .69rem var(--mono); }
 .stage-nav button[aria-pressed=true] { color: var(--mint); border-color: var(--mint); }
 .stage-nav button[aria-pressed=true] span { color: var(--mint); }
@@ -165,6 +165,7 @@ input:disabled, select:disabled { opacity: .7; }
 .node:hover, .node[aria-pressed=true] { border-color: #4d9b8f; background: #153131; }
 .node svg { color: var(--sky); }
 .node[aria-pressed=true] svg { color: var(--mint); }
+.node span { min-width: 0; overflow-wrap: anywhere; }
 .node strong { font-size: .8rem; }
 .node small { font-size: .67rem; }
 .node-link { display: grid; place-items: center; color: #7a9eb1; height: 15px; }
@@ -301,6 +302,12 @@ details[open] > summary svg:last-child { transform: rotate(180deg); }
   .roadmap-tabs { grid-template-columns: 1fr 1fr; border-right: 0; border-bottom: 1px solid var(--edge); }
   .brief-banner { grid-template-columns: 1fr; }
   .brief-preview { justify-self: start; margin-left: 12px; width: 110px; }
+}
+@media (max-width: 360px) {
+  .header-inner { gap: 8px; }
+  .brand { font-size: 16px; gap: 7px; }
+  .brand-mark { width: 31px; height: 31px; }
+  .mobile-menu.button { padding-inline: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
