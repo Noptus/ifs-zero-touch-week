@@ -1,9 +1,22 @@
 import { useState } from 'react';
-import { ArrowDownToLine, ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown, ClipboardList } from 'lucide-react';
 import Architecture from './Architecture';
 import CapacityPlanner from './CapacityPlanner';
-import SiteFrame, { pdf } from './SiteFrame';
+import { CustomerOutcomes, PilotScorecard, productRequirements } from './CustomerCase';
+import SiteFrame from './SiteFrame';
 import WorkflowDemo from './WorkflowDemo';
+
+const benefits = [
+  { audience: 'Technicians', text: 'Review time, travel and work orders already filled in from shift activity.' },
+  { audience: 'Supervisors', text: 'Start with gaps, overlaps and overtime that need a decision.' },
+  { audience: 'Payroll and billing', text: 'Trace approved labor to the right job and track when it posts.' },
+];
+
+const measures = [
+  { value: '≥90%', label: 'Comparable worker-days within 30 minutes' },
+  { value: '≥90%', label: 'Expected reporting days with a draft and approved reference' },
+  { value: '≥30%', label: 'Less median active worker time per daily entry' },
+];
 
 const roadmap = [
   { title: 'Baseline', days: 'Days 01–07', detail: 'Choose one site, confirm the IFS test feed and measure current reporting effort.' },
@@ -22,10 +35,10 @@ export default function App() {
         <div>
           <p className="hero-context">Zero-Touch Week · Independent IFS Cloud proposal</p>
           <h1 id="title">Timesheets</h1>
-          <p className="hero-description">Draft timesheets from work orders and technician check-ins. Ask workers to correct gaps and managers to approve the result.</p>
+          <p className="hero-description">Draft each shift from work orders and check-ins so technicians spend less time entering hours and finance can post approved labor sooner.</p>
           <div className="hero-actions">
             <a className="button primary" href="#workflow">Explore the demo <ArrowRight size={15} /></a>
-            <a className="button" href={pdf} download><ArrowDownToLine size={15} /> Download architecture PDF</a>
+            <a className="button" href={productRequirements.timesheets} target="_blank" rel="noreferrer"><ClipboardList size={15} /> Product requirements</a>
           </div>
         </div>
         <aside className="pilot-target" aria-labelledby="time-tolerance">
@@ -36,12 +49,19 @@ export default function App() {
         </aside>
       </div>
     </section>
+    <CustomerOutcomes benefits={benefits} />
     <section className="shell section" id="workflow">
       <div className="section-title"><h2>Timesheet workflow</h2></div>
       <WorkflowDemo />
     </section>
+    <PilotScorecard
+      measures={measures}
+      baseline="Use redacted work events and approved entries to measure current effort. Compare drafts in shadow mode, then test posting in a sandbox."
+      example="50 technicians saving 3 minutes a day across 20 workdays would free 50 staff hours per month."
+      requirements={productRequirements.timesheets}
+    />
     <section className="shell section" id="architecture">
-      <div className="section-title"><h2>System architecture</h2></div>
+      <div className="section-title"><h2>System architecture</h2><p>Azure and IFS Cloud reference implementation.</p></div>
       <Architecture />
     </section>
     <section className="shell section supporting-section" aria-label="Timesheet design details">

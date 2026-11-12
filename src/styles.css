@@ -74,6 +74,26 @@ svg { flex-shrink: 0; }
 .section-title { margin-bottom: 17px; }
 .section-title h2 { margin: 0 0 5px; font-size: clamp(1.5rem, 2.7vw, 2rem); line-height: 1.2; font-weight: 450; letter-spacing: -.035em; }
 .section-title > p:last-child { max-width: 70ch; color: var(--muted); font-size: .9rem; }
+.customer-outcomes { padding-top: 22px; }
+.customer-outcomes h2 { font-size: .84rem; font-weight: 640; color: var(--muted); margin-bottom: 8px; }
+.customer-outcomes dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--edge); border-radius: 6px; background: var(--surface); }
+.customer-outcomes dl > div { padding: 11px 14px; }
+.customer-outcomes dl > div + div { border-left: 1px solid var(--edge); }
+.customer-outcomes dt { font-size: .88rem; font-weight: 640; margin-bottom: 2px; }
+.customer-outcomes dd { color: var(--muted); font-size: .82rem; }
+
+.pilot-card { border: 1px solid var(--edge); border-radius: 6px; background: var(--surface); overflow: hidden; }
+.pilot-measures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--tint); border-bottom: 1px solid var(--edge); }
+.pilot-measures > div { display: flex; flex-direction: column-reverse; justify-content: start; gap: 1px; padding: 11px 14px; }
+.pilot-measures > div + div { border-left: 1px solid var(--edge); }
+.pilot-measures dt { color: var(--muted); font-size: .79rem; }
+.pilot-measures dd { font-size: 1.48rem; line-height: 1.2; font-weight: 530; letter-spacing: -.035em; color: var(--accent); }
+.pilot-plan { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px 22px; padding: 12px 14px; }
+.pilot-plan h3 { font-size: .86rem; font-weight: 630; }
+.pilot-plan p { color: var(--muted); font-size: .82rem; margin-top: 3px; }
+.pilot-links { display: flex; flex-wrap: wrap; gap: 6px 16px; border-top: 1px solid var(--edge); padding: 7px 14px; }
+.pilot-links .text-button { margin: 0; min-height: 30px; }
+
 .app-panel, .architecture-panel, .capacity-panel, .roadmap { border: 1px solid var(--edge); background: var(--surface); border-radius: 6px; overflow: hidden; }
 .stage-nav { display: flex; gap: 8px; border-bottom: 1px solid var(--edge); padding: 0 21px; background: var(--tint); }
 .stage-nav button { scroll-margin-top: 82px; padding: 15px 12px 13px; color: var(--muted); font-weight: 620; font-size: .86rem; border-bottom: 2px solid transparent; }
@@ -282,6 +302,17 @@ details[open] > summary svg:last-child { transform: rotate(180deg); }
   .hero { grid-template-columns: 1fr; gap: 24px; padding-block: 28px; }
   .pilot-target { padding: 14px 0 0; border-left: 0; border-top: 1px solid #39313f; }
   .section { padding-top: 34px; }
+  .customer-outcomes { padding-top: 18px; }
+  .customer-outcomes dl { grid-template-columns: 1fr; }
+  .customer-outcomes dl > div { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.75fr); gap: 7px; padding: 8px 10px; }
+  .customer-outcomes dl > div + div { border-left: 0; border-top: 1px solid var(--edge); }
+  .pilot-measures { grid-template-columns: 1fr; }
+  .pilot-measures > div { display: grid; grid-template-columns: 54px minmax(0, 1fr); align-items: center; gap: 7px; padding: 7px 10px; }
+  .pilot-measures > div + div { border-left: 0; border-top: 1px solid var(--edge); }
+  .pilot-measures dt { grid-column: 2; grid-row: 1; }
+  .pilot-measures dd { grid-column: 1; grid-row: 1; font-size: 1.2rem; }
+  .pilot-plan { grid-template-columns: 1fr; padding: 10px; }
+  .pilot-links { padding-inline: 10px; }
   .section-title { margin-bottom: 13px; }
   .stage-nav { padding: 0 6px; gap: 3px; }
   .stage-nav button { font-size: .73rem; padding: 9px 4px; flex: 1; }

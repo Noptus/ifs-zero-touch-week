@@ -6,6 +6,9 @@ test('expense page separates line items, reserves allowance once and flags excep
   await page.getByRole('link', { name: 'Expenses', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Expenses', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Expenses', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('region', { name: 'What changes for the customer' })).toContainText('committed spend');
+  await expect(page.getByRole('region', { name: 'Pilot scorecard' })).toContainText('about 13 staff hours per month');
+  await expect(page.getByRole('link', { name: 'Product requirements', exact: true })).toHaveAttribute('href', /expense-requirements\.md$/);
   await page.getByRole('button', { name: 'Try sample receipt' }).click();
   await expect(page.locator('.expense-line').filter({ hasText: 'Cordless drill' })).toContainText('Eligible');
   await expect(page.locator('.expense-line').filter({ hasText: 'Chocolate bar' })).toContainText('Excluded');

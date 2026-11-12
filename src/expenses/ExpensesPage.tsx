@@ -1,9 +1,22 @@
-import { ArrowDownToLine, ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
-import SiteFrame, { base, pdf } from '../SiteFrame';
+import { ArrowRight, ArrowUpRight, ChevronDown, ClipboardList } from 'lucide-react';
+import { CustomerOutcomes, PilotScorecard, productRequirements } from '../CustomerCase';
+import SiteFrame, { base } from '../SiteFrame';
 import ExpenseDemo from './ExpenseDemo';
 
 const slide = `${base}docs/expense-azure-architecture.svg`;
 const specification = 'https://github.com/Noptus/ifs-zero-touch-week/blob/main/docs/technical/expense-processing.md';
+
+const benefits = [
+  { audience: 'Employees', text: 'Capture any shop receipt and confirm the proposed work items in one tap.' },
+  { audience: 'Approvers', text: 'Focus on unclear items, unusual prices and missing evidence.' },
+  { audience: 'Finance', text: 'See committed spend against each allowance and reconcile eligible lines to the ledger.' },
+];
+
+const measures = [
+  { value: '≥70%', label: 'In-scope claims with one confirmation and no corrections or extra evidence' },
+  { value: '≥30%', label: 'Less median active employee time per claim' },
+  { value: '0', label: 'Duplicate, over-cap or unauthorized postings in acceptance tests' },
+];
 
 export default function ExpensesPage() {
   return <SiteFrame current="expenses">
@@ -12,10 +25,10 @@ export default function ExpensesPage() {
         <div>
           <p className="hero-context">Zero-Touch Week · Independent IFS Cloud proposal</p>
           <h1 id="title">Expenses</h1>
-          <p className="hero-description">Photograph a receipt from any shop. Check the items, prices and allowance before sending exceptions for review.</p>
+          <p className="hero-description">Help field staff get reimbursed with less paperwork. A receipt photo becomes an itemized claim with eligibility, price and allowance checks.</p>
           <div className="hero-actions">
             <a className="button primary" href="#receipt">Try receipt capture <ArrowRight size={15} /></a>
-            <a className="button" href={pdf} download><ArrowDownToLine size={15} /> Download architecture PDF</a>
+            <a className="button" href={productRequirements.expenses} target="_blank" rel="noreferrer"><ClipboardList size={15} /> Product requirements</a>
           </div>
         </div>
         <aside className="pilot-target" aria-labelledby="expense-policy">
@@ -25,12 +38,19 @@ export default function ExpensesPage() {
         </aside>
       </div>
     </section>
+    <CustomerOutcomes benefits={benefits} />
     <section className="shell section" id="receipt">
       <div className="section-title"><h2>Receipt to claim</h2><p>Confirm a clean draft in one tap. Review anything the system cannot resolve.</p></div>
       <ExpenseDemo />
     </section>
+    <PilotScorecard
+      measures={measures}
+      baseline="Use redacted receipts, finance-reviewed outcomes and the current policy. Compare drafts and reviewer effort before testing reimbursement posting."
+      example="At 200 claims a month, saving 4 active minutes per claim would free about 13 staff hours per month."
+      requirements={productRequirements.expenses}
+    />
     <section className="shell section" id="azure-architecture">
-      <div className="section-title"><h2>Azure architecture</h2></div>
+      <div className="section-title"><h2>Azure architecture</h2><p>Reference implementation with an IFS Cloud expense adapter.</p></div>
       <figure className="expense-architecture">
         <a href={slide} className="expense-slide" target="_blank" rel="noreferrer">
           <img src={slide} alt="Expense processing in Azure. Capture a receipt, extract it with Document Intelligence, apply Go policy and a PostgreSQL ledger, then post to IFS Cloud or route exceptions to review." width="1120" height="630" loading="lazy" />
@@ -43,7 +63,7 @@ export default function ExpensesPage() {
         </ol>
         <figcaption>
           <a className="text-button" href={slide} target="_blank" rel="noreferrer">Open architecture slide <ArrowUpRight size={15} /></a>
-          <a className="text-button" href={specification} target="_blank" rel="noreferrer">Technical specification <ArrowUpRight size={15} /></a>
+          <a className="text-button" href={specification} target="_blank" rel="noreferrer">Azure implementation notes <ArrowUpRight size={15} /></a>
         </figcaption>
       </figure>
       <details className="supporting-panel expense-notes">

@@ -18,29 +18,29 @@
     <text x="35" y="45" fill="#86e6b7" font-size="12" font-family="monospace">EVIDENCE → DRAFT → APPROVAL → POSTING</text>
     <text x="35" y="260" fill="#c9becf" font-size="12" font-family="monospace">TIMESHEETS + EXPENSES / ONE-SITE PILOT</text>
   </svg>
-  <div class="cover-links"><span>Technical architecture brief · v1.1</span><a href="https://noptus.github.io/ifs-zero-touch-week/">Open the interactive showcase</a></div>
+  <div class="cover-links"><span>Technical architecture brief · v1.2</span><a href="https://noptus.github.io/ifs-zero-touch-week/">Open the interactive showcase</a></div>
   <footer class="footer">Zero-Touch Week · Technical architecture brief</footer>
 </section>
 
 <section class="page">
-  <p class="kicker">Business context</p>
-  <h2>Build the draft while the work happens.</h2>
-  <p class="lead">Delayed time entry creates corrections, missing expenses, late reimbursements and unbilled work. Start with one site and the evidence already available to field workers.</p>
+  <p class="kicker">Customer outcomes</p>
+  <h2>Less field administration.</h2>
+  <p class="lead">Use work signals and receipt photos to prepare drafts. Measure staff time, exception load and the delay from approval to posting against the customer’s current workflow.</p>
   <div class="columns">
     <article class="card"><h3>Time tolerance</h3><p>For each worker-day, compare pre-edit draft and approved reportable minutes. An absolute difference of 30 minutes or less meets the pilot target.</p></article>
     <article class="card"><h3>Activity codes</h3><p>Travel, work, waiting and break are illustrative. Each tenant maps permitted activity and pay codes under a versioned policy.</p></article>
   </div>
-  <h3>Three people-facing responsibilities</h3>
-  <table><thead><tr><th>Role</th><th>Responsibility</th><th>Visible outcome</th></tr></thead><tbody>
-    <tr><td>Worker</td><td>Review proposed intervals and fix missing or incorrect evidence.</td><td>A confirmed, editable draft with its sources.</td></tr>
-    <tr><td>Manager</td><td>Resolve exceptions and authorize a specific revision.</td><td>Approval, reasoned rejection or request for changes.</td></tr>
-    <tr><td>ERP owner</td><td>Validate tenant mapping and reconcile accepted writes.</td><td>An authoritative IFS transaction or a visible failure.</td></tr>
+  <h3>How to measure the customer benefit</h3>
+  <table><thead><tr><th>Role</th><th>Customer benefit</th><th>Measure against baseline</th></tr></thead><tbody>
+    <tr><td>Worker</td><td>Confirm a prepared shift or itemized receipt.</td><td>Active entry minutes, including corrections.</td></tr>
+    <tr><td>Approver</td><td>Start with gaps, outliers and unclear evidence.</td><td>Review time and share needing follow-up.</td></tr>
+    <tr><td>Finance</td><td>Track approved labor and committed expense to posting.</td><td>Allocation accuracy and acknowledgment delay.</td></tr>
   </tbody></table>
   <h3>Evidence boundaries</h3>
   <p>An assigned six-hour order and seven hours of site presence support a possible allocation. Work completion comes from a validated status event, operational record or human confirmation. Camera observations represent crossings of people in a zone. Named identity requires a separately authorized check-in or badge source.</p>
   <div class="callout"><p><strong>Product principle.</strong> Automate data capture, not accountability. Missing evidence stays visible. A policy engine flags possible breaks or overtime and leaves any correction to an authorized person.</p></div>
   <h3>First scope</h3>
-  <p>Pilot timesheets at one worksite and test expense processing against a separate receipt corpus and allowance ledger. Timesheets use operational signals and worker corrections. Expenses use extracted line items, policy checks and a worker attestation.</p>
+  <p>Start with one team and redacted examples. Agree on the current policy, baseline and sandbox destination before implementation. See the <a href="https://github.com/Noptus/ifs-zero-touch-week/blob/main/docs/product/timesheet-requirements.md">timesheet requirements</a> and <a href="https://github.com/Noptus/ifs-zero-touch-week/blob/main/docs/product/expense-requirements.md">expense requirements</a> for acceptance checks.</p>
   <footer class="footer">Zero-Touch Week · Business context</footer>
 </section>
 
@@ -187,7 +187,7 @@ cloud workers = ceil(frames/day /
   <h3>Scorecard</h3>
   <p>Compare draft totals before worker edits with approved reportable minutes for the same worker and site-local day under the same tenant rules. A draft of 7h 50m against 8h 15m approved is 25 minutes off and meets the target. Track the share within 30 minutes, median/p90 absolute daily error, and interval-boundary error separately. Measure category accuracy, allocation match, staff time, missing signals, false and missed crossings, harmful approvals, cost and compliance gates.</p>
   <p>Agree denominators and ground-truth labeling before shadow mode. Report missing drafts or approved references as coverage gaps. Include cameras-off, connectivity-limited and atypical shifts in the sample. Compare results by cohort with uncertainty intervals.</p>
-  <div class="callout"><p><strong>Illustrative hypotheses only.</strong> At least 90% of comparable worker-days within 30 minutes, measurable worker time saved and zero observed harmful approvals. Confirm sample size and acceptance criteria with the tenant before use.</p></div>
+  <div class="callout"><p><strong>Illustrative hypotheses only.</strong> At least 90% comparable coverage, 90% of comparable days within 30 minutes and 30% lower median active entry time. Confirm the gates and sample size with the customer. Harmful postings block expansion.</p></div>
   <footer class="footer">Zero-Touch Week · 30-day pilot</footer>
 </section>
 
@@ -204,7 +204,7 @@ cloud workers = ceil(frames/day /
   </div>
   <h3>Allowance and writeback</h3>
   <p>Lock the employee-month ledger, check the €500 cap, and create the reservation and writeback command in one transaction. Route over-cap claims, low OCR confidence and material corrections for review. Record the IFS acknowledgment before finalizing the reservation.</p>
-  <p>In shadow mode, measure extraction accuracy, staff corrections, straight-through share and false referrals. <a href="https://github.com/Noptus/ifs-zero-touch-week/blob/main/docs/technical/expense-processing.md">Expense technical specification</a></p>
+  <p>Proposed pilot gates are 70% of in-scope claims with one confirmation and no corrections or extra evidence requests, and 30% less median active employee time. <a href="https://github.com/Noptus/ifs-zero-touch-week/blob/main/docs/product/expense-requirements.md">Expense requirements and acceptance checks</a></p>
   <footer class="footer">Zero-Touch Week · Expenses</footer>
 </section>
 

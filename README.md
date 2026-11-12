@@ -1,6 +1,6 @@
 # Zero-Touch Week
 
-**From operational signals to accurate timesheets — without the paperwork.**
+**Less field administration for timesheets and work expenses.**
 
 An independent architecture showcase for an IFS technical interview. Explore two field-service workflows: evidence-backed timesheets and receipt-to-claim expenses.
 
@@ -8,6 +8,15 @@ An independent architecture showcase for an IFS technical interview. Explore two
 - [Expenses](https://noptus.github.io/ifs-zero-touch-week/expenses/)
 - [Architecture brief (PDF)](https://noptus.github.io/ifs-zero-touch-week/docs/zero-touch-week-architecture.pdf)
 - [GitHub Pages workflow](.github/workflows/pages.yml)
+
+## Product handoff
+
+Start with one team and compare active employee time, exception load and posting delay with the customer's current workflow. The product requirements define behavior, acceptance checks and integration contracts independent of a cloud, model or ERP. The engineering notes show one Azure and IFS Cloud implementation.
+
+| Feature | Product requirements | Implementation reference |
+| --- | --- | --- |
+| Field timesheets | [Requirements and acceptance checks](docs/product/timesheet-requirements.md) | [Timesheet architecture](docs/technical/architecture.md) |
+| Work expenses | [Requirements and acceptance checks](docs/product/expense-requirements.md) | [Expense architecture](docs/technical/expense-processing.md) |
 
 ## Run locally
 

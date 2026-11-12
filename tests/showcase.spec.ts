@@ -6,6 +6,9 @@ test('pilot accuracy target defines the pre-edit daily comparison', async ({ pag
   await expect(target).toContainText('≤30 minutes');
   await expect(target).toContainText('approved total for the same worker and day');
   await expect(target).toContainText('25 minutes of error');
+  await expect(page.getByRole('region', { name: 'What changes for the customer' })).toContainText('Payroll and billing');
+  await expect(page.getByRole('region', { name: 'Pilot scorecard' })).toContainText('50 staff hours per month');
+  await expect(page.getByRole('link', { name: 'Product requirements', exact: true })).toHaveAttribute('href', /timesheet-requirements\.md$/);
 });
 
 test.describe('Mobile worker confirmation', () => {
@@ -115,7 +118,10 @@ for (const width of [320, 390, 768, 1440]) {
     const nav = page.getByRole('navigation', { name: 'Main navigation' });
     await expect(nav.getByRole('link', { name: 'Timesheets' })).toHaveAttribute('aria-current', 'page');
     await expect(nav.getByRole('link', { name: 'Expenses' })).toBeVisible();
-    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+    await page.evaluate(() => {
+      (document.activeElement as HTMLElement | null)?.blur();
+      scrollTo({ top: 0, behavior: 'instant' });
+    });
     await page.screenshot({ fullPage: true, path: testInfo.outputPath('showcase.png'), animations: 'disabled' });
     await page.getByRole('button', { name: 'Confirm timesheet' }).click();
     const phone = page.getByRole('region', { name: 'Worker timesheet' });
