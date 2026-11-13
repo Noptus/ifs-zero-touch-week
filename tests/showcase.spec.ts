@@ -6,20 +6,35 @@ test('pilot accuracy target defines the pre-edit daily comparison', async ({ pag
   await expect(target).toContainText('≤30 minutes');
   await expect(target).toContainText('approved total for the same worker and day');
   await expect(target).toContainText('25 minutes of error');
-  await expect(page.getByRole('region', { name: 'What changes for the customer' })).toContainText('Payroll and billing');
-  await expect(page.getByRole('region', { name: 'Pilot scorecard' })).toContainText('50 staff hours per month');
+  const value = page.getByRole('region', { name: 'Value', exact: true });
+  await expect(value).toContainText('Payroll and billing');
+  await expect(value).toContainText('50 staff hours per month');
   await expect(page.getByRole('link', { name: 'Product requirements', exact: true })).toHaveAttribute('href', /timesheet-requirements\.md$/);
 });
+
+for (const path of ['./', './expenses/']) {
+  test(`workflow at ${path} has exactly four sections in the same order`, async ({ page }) => {
+    await page.goto(path);
+    const nav = page.getByRole('navigation', { name: 'Main navigation' });
+    const labels = ['Demo', 'Value', 'Architecture', 'Features'];
+    await expect(nav.getByRole('link')).toHaveText(['Timesheets', 'Expenses']);
+    await expect(page.locator('main > section h2')).toHaveText(labels);
+    const links = page.getByRole('navigation', { name: 'On this page' }).getByRole('link');
+    await expect(links).toHaveText(labels);
+    await links.last().click();
+    await expect(page).toHaveURL(/#features$/);
+    await expect(page.getByRole('region', { name: 'Features', exact: true })).toBeInViewport();
+  });
+}
 
 test.describe('Mobile worker confirmation', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 
   test('worker correction moves through manager exceptions and approval', async ({ page }) => {
     await page.goto('./');
-    await page.getByRole('link', { name: 'Explore the demo' }).click();
-    await page.getByRole('switch', { name: /camera evidence/i }).click();
+    await page.getByRole('link', { name: 'Demo', exact: true }).click();
     await page.getByRole('button', { name: /waiting for site clearance/i }).click();
-    await expect(page.getByText(/anonymous inbound crossing/)).toBeVisible();
+    await expect(page.locator('.evidence-card')).toContainText('08:45');
     await page.getByRole('button', { name: 'Review the proposed week' }).click();
     await expect(page.getByRole('button', { name: /confirm timesheet/i })).toBeFocused();
     const phone = page.getByRole('region', { name: 'Worker timesheet' });

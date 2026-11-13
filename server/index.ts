@@ -8,7 +8,6 @@ import { hasAiSourceMarker } from '../src/expenses/receiptText';
 import { browserActor, commandSchema, WorkflowError } from '../src/pilot/model';
 import type { Actor } from '../src/pilot/model';
 import { storage } from './storage';
-import { analyze, publicFrame, visionEnabled } from './vision';
 
 const local = process.env.PILOT_AUTH === 'local';
 if (!local && (!process.env.PILOT_EMPLOYEE_OBJECT_ID || !process.env.PILOT_REVIEWER_OBJECT_ID || !process.env.PILOT_TENANT_ID || process.env.PILOT_EMPLOYEE_OBJECT_ID === process.env.PILOT_REVIEWER_OBJECT_ID)) {
@@ -100,16 +99,6 @@ const app = createServer(async (req, res) => {
         if (!image) throw new WorkflowError('Receipt photo not found.', 404);
         res.writeHead(200, { 'Content-Type': image.mime, 'Cache-Control': 'no-store' });
         return res.end(image.bytes);
-      }
-      if (route === 'api/vision' && req.method === 'GET') return json(res, { enabled: visionEnabled });
-      if (route === 'api/vision' && req.method === 'POST') {
-        const input = await body(req, 1_050_000);
-        return json(res, await analyze(input?.source, input?.frame));
-      }
-      if (route === 'api/camera' && req.method === 'GET') {
-        const frame = await publicFrame();
-        res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Cache-Control': 'no-store' });
-        return res.end(frame.bytes);
       }
       throw new WorkflowError('Not found.', 404);
     }

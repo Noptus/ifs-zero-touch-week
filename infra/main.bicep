@@ -13,11 +13,6 @@ param employeeObjectId string
 param reviewerObjectId string
 @secure()
 param pgPassword string
-@description('OpenAI-compatible vision endpoint including its /v1 path. Empty disables inference.')
-param visionBaseUrl string = ''
-param visionModel string = ''
-@secure()
-param visionApiKey string = ''
 
 var admin = 'pilotadmin'
 var appName = '${prefix}-app'
@@ -121,9 +116,6 @@ resource app 'Microsoft.Web/sites@2024-04-01' = {
         { name: 'PGPASSWORD', value: pgPassword }
         { name: 'PGDATABASE', value: db.name }
         { name: 'PG_TLS', value: '1' }
-        { name: 'VISION_BASE_URL', value: visionBaseUrl }
-        { name: 'VISION_MODEL', value: visionModel }
-        { name: 'VISION_API_KEY', value: visionApiKey }
       ]
     }
   }

@@ -9,7 +9,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         timesheets: fileURLToPath(new URL('index.html', import.meta.url)),
-        live: fileURLToPath(new URL('live/index.html', import.meta.url)),
         expenses: fileURLToPath(new URL('expenses/index.html', import.meta.url)),
       },
     },

@@ -1,12 +1,11 @@
 import { useRef, useState } from 'react';
-import { ArrowRight, CalendarDays, Check, ChevronRight, CircleAlert, Clock3, Fingerprint, ScanLine, ShieldCheck } from 'lucide-react';
+import { ArrowRight, CalendarDays, Check, ChevronRight, CircleAlert, Clock3, Fingerprint, ShieldCheck } from 'lucide-react';
 import WorkerConfirmation from './WorkerConfirmation';
 import { clock, duration, makeWeek, reportableMinutes, validate } from './workflow';
 import type { Interval } from './workflow';
 import { projects } from './workflow';
 import { usePilot } from './pilot/client';
 import { exampleWeek, projectOrder, timeExceptions } from './pilot/model';
-import { base } from './SiteFrame';
 
 type Stage = 'journey' | 'worker' | 'manager';
 type Status = 'Draft' | 'Pending review' | 'Changes requested' | 'Rejected' | 'Approved locally';
@@ -32,7 +31,6 @@ function Workflow({ pilot, week, initialStage, chooseWeek }: { pilot: ReturnType
   const [stage, setStage] = useState<Stage>(initialStage ?? (demo ? 'journey' : 'worker'));
   const stageNav = useRef<HTMLElement>(null);
   const [selected, setSelected] = useState(0);
-  const [camera, setCamera] = useState(false);
   const [day, setDay] = useState(0);
   const [draft, setDraft] = useState<{ revision: number; rows: Interval[] }>();
   const rows = draft?.revision === (saved?.revision ?? 0) ? draft.rows : saved?.rows ?? (demo ? initialWeek : []);
@@ -104,7 +102,6 @@ function Workflow({ pilot, week, initialStage, chooseWeek }: { pilot: ReturnType
         setWeekError(''); chooseWeek(value);
       }} /></label>
       <button className="text-button" disabled={pilot.busy} onClick={() => { void pilot.run(); }}>Refresh saved records</button>
-      <a className="text-button" href={`${base}live/`}>Try live feed analysis <ArrowRight size={15} /></a>
     </div>
     {(weekError || pilot.error) && <p className="inline-note" role="alert">{weekError || pilot.error}</p>}
     <nav ref={stageNav} className="stage-nav" aria-label="Demo steps">
@@ -113,7 +110,6 @@ function Workflow({ pilot, week, initialStage, chooseWeek }: { pilot: ReturnType
     {stage === 'journey' && demo && <div className="demo-body">
       <div className="demo-toolbar">
         <div className="worker"><span className="avatar">AM</span><div><strong>Ari Morgan</strong><small>Field technician · Harbor Works</small></div></div>
-        <button className="switch" type="button" role="switch" aria-checked={camera} onClick={() => setCamera(!camera)}><i /> Camera evidence <span>{camera ? 'on' : 'off'}</span></button>
       </div>
       <div className="journey-grid">
         <div className="timeline" aria-label="Monday evidence timeline">
@@ -129,7 +125,6 @@ function Workflow({ pilot, week, initialStage, chooseWeek }: { pilot: ReturnType
           <dl><dt>Proposed activity</dt><dd>{row.activity === 'Gap' ? 'Unclassified · 30 minutes' : row.activity}</dd><dt>Project</dt><dd>{row.project}</dd><dt>Start and end evidence</dt>
             {row.evidence.map(e => <dd className="evidence-source" key={e.id}><Clock3 size={14} /><div><strong>{e.label}</strong><small>{e.source}</small></div></dd>)}
           </dl>
-          {camera && <div className="inline-note"><ScanLine size={16} /> {selected === 1 ? 'Gate A recorded an anonymous inbound crossing at 08:46. The dispatch log supports Ari’s interval.' : 'Camera evidence is optional. This interval uses operational records.'}</div>}
           <button type="button" className="text-button" onClick={() => { setDay(0); goTo('worker'); }}>Review the proposed week <ArrowRight size={15} /></button>
         </div>
       </div>

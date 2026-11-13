@@ -64,7 +64,7 @@ On a fresh Linux runner use `npx playwright install --with-deps chromium`. The P
 
 ## Scope and limitations
 
-The hosted GitHub Pages showcase has working browser-local receipt OCR, claim review, and saved timesheet approval with CSV export. The [live feed page](https://noptus.github.io/ifs-zero-touch-week/live/) shows the public camera; model inference runs on the configurable pilot server. Neither edition pays claims or writes to IFS. The architecture brief separates the working pilot from the planned enterprise integrations.
+The hosted GitHub Pages showcase has working browser-local receipt OCR, claim review, and saved timesheet approval with CSV export. Neither edition pays claims or writes to IFS. The architecture brief separates the working pilot from the planned enterprise integrations.
 
 Capacity presets are illustrative assumptions in USD. They are editable and contain no measured throughput, production customer footprint, region-specific quota or Azure price quote.
 
@@ -72,19 +72,15 @@ The pilot counts a comparable worker-day as within target when the absolute diff
 
 This project is independent of IFS. No employee information, credentials, real footage or model weights are included.
 
-## Run the live demo
-
-Requires Node 22 and a vision model. [Ollama Qwen2.5-VL 3B](https://ollama.com/library/qwen2.5vl) runs locally without an API key; the download is about 3.2 GB. Start Ollama first if it is not running.
+## Run the local pilot
 
 ```sh
 npm ci
-ollama pull qwen2.5vl:3b
 npm run build:pilot
-PILOT_AUTH=local PILOT_SEED_DEMO=1 VISION_BASE_URL=http://127.0.0.1:11434/v1 \
-  VISION_MODEL=qwen2.5vl:3b npm run pilot
+PILOT_AUTH=local PILOT_SEED_DEMO=1 npm run pilot
 ```
 
-Open [the local pilot](http://127.0.0.1:8788/ifs-zero-touch-week/) and select **Live feed → Start analysis**. The [USGS Kīlauea still feed](https://www.usgs.gov/volcanoes/kilauea/kwcam-live-panorama-halemaumau-west-rim-kilauea-summit-caldera-looking-southeast) is fetched on its own schedule; repeat frames reuse the observation. **My webcam** samples at a target of five seconds, waiting for the last request to finish. Stop closes the camera and stops new requests. You can replace the two vision settings with a LiteLLM OpenAI-compatible proxy and set `VISION_API_KEY` on the server. The model observations are advisory and never enter payroll. The pilot stores no video; provider retention is separately configured.
+Open the [local pilot](http://127.0.0.1:8788/ifs-zero-touch-week/) to submit a timesheet, review it in the manager inbox and download the approved CSV.
 
 To try an expense, open **Expenses → Choose image** or use **Take photo** on a phone. Confirm extracted fields, submit, then reopen the saved claim to review an exception. The $500 USD figure is an eligible reimbursement limit per employee per calendar month. The seed is fictional. US retail benchmarks for the example are [Ryobi drill kit, $98.97](https://www.homedepot.com/p/345174555), [Craftsman drill kit, $99.00](https://www.lowes.com/pd/CRAFTSMAN-20-volt-Max-1-2-in-Keyless-Cordless-Drill-1-Batteries-Included-and-Charger-Included/5018700285) and [chocolate bar, $1.99](https://www.target.com/p/-/A-13347750). Actual prices vary; the demo does not query retailers. A provenance marker is only a review signal; its absence says nothing about authenticity.
 
